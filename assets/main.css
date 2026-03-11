@@ -66,6 +66,11 @@ a:focus-visible {
   color: var(--link-hover);
 }
 
+.inline-link {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
