@@ -397,10 +397,10 @@ select {
 
   .profile-role,
   .profile-bio {
-    max-width: 18rem;
+    max-width: 26rem;
     margin-bottom: 10px;
-    font-size: 0.98rem;
-    line-height: 1.5;
+    font-size: 0.94rem;
+    line-height: 1.46;
   }
 
   .social-links {
@@ -484,9 +484,9 @@ select {
 
   .profile-role,
   .profile-bio {
-    max-width: 16.5rem;
-    font-size: 0.94rem;
-    line-height: 1.44;
+    max-width: 22rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
   }
 
   .social-links {
