@@ -1,0 +1,21 @@
+title: Chelebi.io
+description: I share what I build, what breaks, and what I learn along the way.
+author: Arif Celebi
+baseurl: ""
+url: "https://chelebi.dev"
+hero_title: Hey, it's Arif.
+email: arif@chelebi.dev
+github_url: https://github.com/Chelebii
+twitter_url: https://x.com/Chelebi__
+linkedin_url: https://uk.linkedin.com/in/chelebiuk
+location: Cambridge, UK
+role: Software engineering student exploring AI agents, automation, and software systems.
+focus: AI agents, apps, automation
+role_prefix: Software engineering student
+role_link: https://www.aru.ac.uk/
+role_link_label: '@ARU'
+role_suffix: building AI agents and software systems.
+footer_tagline: Explorations in software, agentic systems, apps, and more.
+exclude:
+  - silinenler
+  - bak
