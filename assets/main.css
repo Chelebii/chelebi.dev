@@ -350,8 +350,9 @@ select {
   }
 
   .profile-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 90px minmax(0, 1fr);
     gap: 18px;
+    align-items: start;
   }
 
   .profile-avatar {
