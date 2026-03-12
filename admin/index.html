@@ -366,7 +366,6 @@
             assetsPath: 'assets',
             oauthClientId: window.CMS_GITHUB_CLIENT_ID || 'Ov23li1y2XvAHLXnnNxi',
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
-            avatarUploadUrl: window.CMS_AVATAR_UPLOAD_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/api/avatar-upload',
             oauthScope: 'repo',
             imageExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
             hiddenAssetNames: ['og-banner.png', 'profile-avatar.jpg', 'profile-avatar.png', 'profile-avatar-backup.png', 'profile.jpg'],
@@ -1258,6 +1257,61 @@
                 editor.sourceSha = response.data?.content?.sha || response.content?.sha || editor.sourceSha;
             },
 
+            async saveProfileAvatarAsset(dataUrl) {
+                const avatar = window.CmsCore.dataUrlToBase64(dataUrl);
+                if (avatar.mimeType !== 'image/png') {
+                    throw new Error('Profile avatar must be saved as a PNG image.');
+                }
+
+                let existingAvatar = null;
+                let existingBackup = null;
+
+                try {
+                    existingAvatar = await this.octokit.repos.getContent({
+                        ...CONFIG,
+                        path: 'assets/profile-avatar.png'
+                    });
+                } catch (error) {
+                    if (error.status !== 404) throw error;
+                }
+
+                if (existingAvatar?.data?.type !== 'file') {
+                    existingAvatar = null;
+                }
+
+                if (existingAvatar?.data?.content) {
+                    try {
+                        existingBackup = await this.octokit.repos.getContent({
+                            ...CONFIG,
+                            path: 'assets/profile-avatar-backup.png'
+                        });
+                    } catch (error) {
+                        if (error.status !== 404) throw error;
+                    }
+
+                    await this.octokit.repos.createOrUpdateFileContents({
+                        ...CONFIG,
+                        path: 'assets/profile-avatar-backup.png',
+                        message: 'cms: backup profile avatar',
+                        content: String(existingAvatar.data.content || '').replace(/\n/g, ''),
+                        sha: existingBackup?.data?.sha || undefined
+                    });
+                }
+
+                const savedAvatar = await this.octokit.repos.createOrUpdateFileContents({
+                    ...CONFIG,
+                    path: 'assets/profile-avatar.png',
+                    message: 'cms: update profile avatar',
+                    content: avatar.base64,
+                    sha: existingAvatar?.data?.sha || undefined
+                });
+
+                return {
+                    backupPath: existingAvatar?.data?.content ? 'assets/profile-avatar-backup.png' : null,
+                    sha: savedAvatar.data?.content?.sha || savedAvatar.content?.sha || null
+                };
+            },
+
             async commitProfilePreview() {
                 if (!this.octokit || !this.contentStore) {
                     this.setStatus('photos-status', 'Login is required before saving the profile photo.', true);
@@ -1288,16 +1342,7 @@
 
                 try {
                     await this.saveProfileSourceAsset();
-                    const result = await window.CmsCore.uploadProfileAvatar({
-                        workerUrl: CONFIG.avatarUploadUrl,
-                        token: sessionStorage.getItem('gh_token'),
-                        imageDataUrl: dataUrl,
-                        targetPath: 'assets/profile-avatar.png',
-                        backupPath: 'assets/profile-avatar-backup.png',
-                        sourcePath: 'assets/profile.jpg',
-                        commitMessage: 'cms: update profile avatar',
-                        backupMessage: 'cms: backup profile avatar'
-                    });
+                    const result = await this.saveProfileAvatarAsset(dataUrl);
 
                     this.clearProfileDraftState();
                     this.refreshProfilePreview(dataUrl);
