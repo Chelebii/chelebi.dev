@@ -33,10 +33,24 @@
     }
   }
 
+  function refreshProfileAvatar() {
+    var avatar = document.querySelector('.profile-avatar[data-avatar-base]');
+    if (!avatar) {
+      return;
+    }
+
+    var version = String(Date.now());
+    avatar.dataset.avatarVersion = version;
+    delete avatar.dataset.fallback;
+    avatar.src = avatar.dataset.avatarBase + '?v=' + version;
+  }
+
   var initialTheme = getSavedTheme() || getSystemTheme();
   applyTheme(initialTheme);
 
   document.addEventListener('DOMContentLoaded', function () {
+    refreshProfileAvatar();
+
     var toggle = document.getElementById('theme-toggle');
     if (!toggle) {
       return;
@@ -58,5 +72,9 @@
         }
       });
     }
+  });
+
+  window.addEventListener('pageshow', function () {
+    refreshProfileAvatar();
   });
 })();
