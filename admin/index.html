@@ -215,7 +215,7 @@
                 };
 
                 // If this is the callback page, handle code exchange
-                if (location.pathname.endsWith('/admin/callback')) {
+                if (location.pathname.endsWith('/admin/callback') || location.pathname.endsWith('/admin/callback/')) {
                     const q = new URLSearchParams(location.search);
                     const code = q.get('code');
                     const state = q.get('state');
