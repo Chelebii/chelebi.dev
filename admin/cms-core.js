@@ -63,51 +63,6 @@
     };
   }
 
-  async function uploadProfileAvatar(options) {
-    const settings = options || {};
-    const workerUrl = String(settings.workerUrl || '').trim();
-    const token = String(settings.token || '').trim();
-    const avatar = dataUrlToBase64(settings.imageDataUrl || settings.dataUrl || '');
-
-    if (!workerUrl) {
-      throw new Error('Avatar upload endpoint is not configured.');
-    }
-
-    if (!token) {
-      throw new Error('GitHub token is required to save the avatar.');
-    }
-
-    const response = await fetch(workerUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        imageBase64: avatar.base64,
-        mimeType: avatar.mimeType,
-        targetPath: settings.targetPath || 'assets/profile-avatar.png',
-        backupPath: settings.backupPath || 'assets/profile-avatar-backup.png',
-        sourcePath: settings.sourcePath || 'assets/profile.jpg',
-        commitMessage: settings.commitMessage || 'cms: update profile avatar',
-        backupMessage: settings.backupMessage || 'cms: backup profile avatar'
-      })
-    });
-
-    let payload = null;
-    try {
-      payload = await response.json();
-    } catch (error) {
-      payload = null;
-    }
-
-    if (!response.ok) {
-      throw new Error((payload && payload.error) || 'Avatar upload failed.');
-    }
-
-    return payload || { ok: true };
-  }
-
   function createGithubContentStore(octokit, config) {
     return {
       async get(path) {
@@ -146,7 +101,6 @@
     extractBody,
     buildPostContent,
     dataUrlToBase64,
-    uploadProfileAvatar,
     createGithubContentStore
   };
 }));

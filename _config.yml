@@ -16,6 +16,3 @@ role_link: https://www.aru.ac.uk/
 role_link_label: '@ARU'
 role_suffix: building AI agents and software systems.
 footer_tagline: Explorations in software, agentic systems, apps, and more.
-exclude:
-  - silinenler
-  - bak

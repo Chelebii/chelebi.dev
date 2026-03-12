@@ -392,37 +392,6 @@
                     location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
                 };
 
-                // If this is the callback page, handle code exchange
-                if (location.pathname.endsWith('/admin/callback') || location.pathname.endsWith('/admin/callback/')) {
-                    const q = new URLSearchParams(location.search);
-                    const code = q.get('code');
-                    const state = q.get('state');
-                    const stored = sessionStorage.getItem('oauth_state');
-                    if (!code || state !== stored) {
-                        this.setStatus('auth-error', 'Invalid OAuth response.', true);
-                    } else {
-                        this.setStatus('auth-error', 'Completing login...', false);
-                        fetch(CONFIG.oauthExchangeUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                code,
-                                redirect_uri: `${location.origin}/admin/callback`
-                            })
-                        }).then(r => r.json()).then(async data => {
-                            if (data.error) throw new Error(data.error_description || data.error);
-                            const token = data.access_token;
-                            if (!token) throw new Error('No token received from exchange endpoint');
-                            sessionStorage.setItem('gh_token', token);
-                            sessionStorage.removeItem('oauth_state');
-                            location.replace('/admin');
-                        }).catch(err => {
-                            this.setStatus('auth-error', err.message || String(err), true);
-                        });
-                    }
-                };
-
-
                 this.easyMDE = new EasyMDE({
                     element: document.getElementById('post-content'),
                     spellChecker: false,
@@ -593,7 +562,7 @@
                     const { data } = await this.octokit.repos.getContent({ ...CONFIG, path: CONFIG.configPath });
                     const yaml = this.decodeContent(data.content);
                     const lines = yaml.split('\n');
-                    const fields = ['hero_title', 'description', 'github_url', 'twitter_url', 'linkedin_url'];
+                    const fields = ['description', 'github_url', 'linkedin_url'];
                     form.innerHTML = fields.map(field => {
                         const line = lines.find(item => item.startsWith(field + ':'));
                         const value = line ? line.substring(line.indexOf(':') + 1).trim().replace(/^"(.*)"$/, '$1') : '';
@@ -609,7 +578,7 @@
                 try {
                     const { data } = await this.octokit.repos.getContent({ ...CONFIG, path: CONFIG.configPath });
                     let yaml = this.decodeContent(data.content);
-                    const fields = ['hero_title', 'description', 'github_url', 'twitter_url', 'linkedin_url'];
+                    const fields = ['description', 'github_url', 'linkedin_url'];
                     fields.forEach(field => {
                         const value = document.getElementById(`conf-${field}`).value;
                         const safeValue = value.replace(/"/g, '\\"');
@@ -1101,23 +1070,6 @@
 
             bumpProfileZoom(delta) {
                 this.setProfileZoom(this.profileEditor.zoomPercent + Number(delta || 0));
-            },
-
-            nudgeProfile(direction) {
-                const cropper = this.profileEditor.cropper;
-                if (!cropper) return;
-
-                const step = 10;
-                const movement = {
-                    up: [0, -step],
-                    down: [0, step],
-                    left: [-step, 0],
-                    right: [step, 0]
-                }[direction];
-
-                if (!movement) return;
-                cropper.move(movement[0], movement[1]);
-                this.refreshProfilePreview();
             },
 
             centerProfileCrop() {
