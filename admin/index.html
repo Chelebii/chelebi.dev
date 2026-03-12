@@ -309,6 +309,8 @@
     </div>
 
     <script>
+        const PROFILE_AVATAR_RENDER_SIZE = 1024;
+
         const CONFIG = {
             owner: 'Chelebii',
             repo: 'chelebi.dev',
@@ -1087,7 +1089,7 @@
                 this.centerProfileCrop();
             },
 
-            getProfilePreviewDataUrl(size = 512) {
+            getProfilePreviewDataUrl(size = PROFILE_AVATAR_RENDER_SIZE) {
                 const cropper = this.profileEditor.cropper;
                 if (!cropper) {
                     return this.profileEditor.outputDataUrl.startsWith('data:image/png;base64,')
@@ -1174,7 +1176,7 @@
                 const deleteButton = document.getElementById('profile-source-delete-btn');
                 const note = document.getElementById('profile-editor-note');
                 const previousLabel = saveButton ? saveButton.textContent : 'Kaydet';
-                const dataUrl = this.getProfilePreviewDataUrl(512);
+                const dataUrl = this.getProfilePreviewDataUrl(PROFILE_AVATAR_RENDER_SIZE);
 
                 if (!dataUrl || !dataUrl.startsWith('data:image/png;base64,')) {
                     this.setStatus('photos-status', 'Could not generate a PNG preview for saving.', true);
