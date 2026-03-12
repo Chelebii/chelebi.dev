@@ -395,7 +395,14 @@
             async deletePost(path, sha) {
                 if (!confirm(`Delete ${path}?`)) return;
                 try {
-                    await this.contentStore.remove(path, `cms: delete post ${path}`, sha);
+                    let effectiveSha = sha;
+                    try {
+                        const latest = await this.contentStore.get(path);
+                        effectiveSha = latest.sha || effectiveSha;
+                    } catch (refreshError) {
+                        // Use provided sha if the latest lookup fails.
+                    }
+                    await this.contentStore.remove(path, `cms: delete post ${path}`, effectiveSha);
                     this.setStatus('posts-status', 'Post deleted.', false);
                     this.loadPosts();
                 } catch (error) {
