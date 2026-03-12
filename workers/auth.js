@@ -1,55 +1,81 @@
+const ALLOWED_ORIGIN = "https://chelebi.dev";
+
+function buildCorsHeaders(origin) {
+  const safeOrigin = origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN;
+  return {
+    "Access-Control-Allow-Origin": safeOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin"
+  };
+}
+
+function jsonResponse(body, status = 200, origin = ALLOWED_ORIGIN) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      ...buildCorsHeaders(origin)
+    }
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    
-    // CORS
+    const origin = request.headers.get("Origin") || "";
+
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-      });
+      if (origin !== ALLOWED_ORIGIN) {
+        return new Response(null, { status: 403 });
+      }
+      return new Response(null, { headers: buildCorsHeaders(origin) });
+    }
+
+    if (origin && origin !== ALLOWED_ORIGIN) {
+      return jsonResponse({ error: "Origin not allowed" }, 403, origin);
     }
 
     if (url.pathname === "/auth/github" && request.method === "POST") {
-      const { code, redirect_uri } = await request.json();
+      let payload;
+
+      try {
+        payload = await request.json();
+      } catch (error) {
+        return jsonResponse({ error: "Invalid JSON body" }, 400, origin);
+      }
+
+      const { code, redirect_uri } = payload || {};
 
       if (!code) {
-        return new Response(JSON.stringify({ error: "Missing authorization code" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-        });
+        return jsonResponse({ error: "Missing authorization code" }, 400, origin);
+      }
+
+      if (redirect_uri !== `${ALLOWED_ORIGIN}/admin/callback`) {
+        return jsonResponse({ error: "Invalid redirect URI" }, 400, origin);
       }
 
       if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-        return new Response(JSON.stringify({ error: "OAuth credentials are not configured" }), {
-          status: 500,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-        });
+        return jsonResponse({ error: "OAuth credentials are not configured" }, 500, origin);
       }
 
       const response = await fetch("https://github.com/login/oauth/access_token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           client_id: env.GITHUB_CLIENT_ID,
           client_secret: env.GITHUB_CLIENT_SECRET,
           code,
-          redirect_uri,
-        }),
+          redirect_uri
+        })
       });
 
       const data = await response.json();
       if (!response.ok || data.error) {
-        return new Response(JSON.stringify(data), {
-          status: response.status || 400,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-        });
+        return jsonResponse(data, response.status || 400, origin);
       }
 
       if (data.access_token) {
@@ -57,40 +83,30 @@ export default {
           headers: {
             "Authorization": `Bearer ${data.access_token}`,
             "User-Agent": "chelebi-cms-worker",
-            "Accept": "application/vnd.github+json",
-          },
+            "Accept": "application/vnd.github+json"
+          }
         });
+
         const userData = await userRes.json();
         const allowedUsername = String(env.ALLOWED_GITHUB_USERNAME || "").trim().toLowerCase();
         const actualUsername = String(userData.login || "").trim().toLowerCase();
 
         if (!userRes.ok || !actualUsername) {
-          return new Response(JSON.stringify({ error: "Could not verify GitHub user" }), {
-            status: 502,
-            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-          });
+          return jsonResponse({ error: "Could not verify GitHub user" }, 502, origin);
         }
 
         if (!allowedUsername) {
-          return new Response(JSON.stringify({ error: "ALLOWED_GITHUB_USERNAME is not configured" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-          });
+          return jsonResponse({ error: "ALLOWED_GITHUB_USERNAME is not configured" }, 500, origin);
         }
 
         if (actualUsername !== allowedUsername) {
-          return new Response(JSON.stringify({ error: "Unauthorized user" }), {
-            status: 403,
-            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-          });
+          return jsonResponse({ error: "Unauthorized user" }, 403, origin);
         }
       }
 
-      return new Response(JSON.stringify(data), {
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-      });
+      return jsonResponse(data, 200, origin);
     }
 
     return new Response("Not Found", { status: 404 });
-  },
+  }
 };
