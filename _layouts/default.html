@@ -40,7 +40,7 @@
     <section class="profile-section" aria-labelledby="profile-heading">
       <div class="profile-card">
         <div class="profile-avatar-link" aria-label="{{ site.author | default: 'Arif' }} profile photo">
-          <img class="profile-avatar" src="{{ '/assets/profile-avatar.png' | relative_url }}" alt="{{ site.author | default: 'Arif' }} profile photo" width="150" height="150" loading="eager" decoding="sync" fetchpriority="high">
+          <img class="profile-avatar" src="{{ '/assets/profile-avatar.png' | relative_url }}" alt="{{ site.author | default: 'Arif' }} profile photo" width="150" height="150" loading="eager" decoding="sync" fetchpriority="high" onerror="if (!this.dataset.fallback) { this.dataset.fallback = 'profile'; this.src = '{{ '/assets/profile.jpg' | relative_url }}'; }">
         </div>
         <div class="profile-copy">
           <h1 id="profile-heading" class="profile-heading">Hey, it's Arif.</h1>
