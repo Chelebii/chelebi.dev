@@ -134,9 +134,7 @@ async function handleAvatarUpload(request, env, origin) {
   const imageBase64 = String(payload?.imageBase64 || "").trim();
   const mimeType = String(payload?.mimeType || "").trim().toLowerCase();
   const targetPath = String(payload?.targetPath || "assets/profile-avatar.png").trim();
-  const backupPath = String(payload?.backupPath || "assets/profile-avatar-backup.png").trim();
   const commitMessage = String(payload?.commitMessage || "cms: update profile avatar").trim();
-  const backupMessage = String(payload?.backupMessage || "cms: backup profile avatar").trim();
 
   if (!imageBase64) {
     return jsonResponse({ error: "Missing imageBase64 payload" }, 400, origin);
@@ -169,15 +167,6 @@ async function handleAvatarUpload(request, env, origin) {
 
   try {
     const existingAvatar = await getGithubFile(token, repoConfig, targetPath);
-    if (existingAvatar) {
-      const existingBackup = await getGithubFile(token, repoConfig, backupPath);
-      await putGithubFile(token, repoConfig, backupPath, {
-        message: backupMessage,
-        content: existingAvatar.content,
-        sha: existingBackup?.sha
-      });
-    }
-
     const savedAvatar = await putGithubFile(token, repoConfig, targetPath, {
       message: commitMessage,
       content: imageBase64,
@@ -187,7 +176,6 @@ async function handleAvatarUpload(request, env, origin) {
     return jsonResponse({
       ok: true,
       path: targetPath,
-      backupPath: existingAvatar ? backupPath : null,
       sha: savedAvatar.content?.sha || null,
       commitSha: savedAvatar.commit?.sha || null
     }, 200, origin);

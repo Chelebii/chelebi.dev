@@ -15,7 +15,7 @@ function buildGithubContentResponse(path, sha, content) {
   });
 }
 
-test('avatar upload backs up current avatar before overwriting target', async () => {
+test('avatar upload overwrites current avatar target', async () => {
   const calls = [];
   global.fetch = async (url, init = {}) => {
     calls.push({ url: String(url), init });
@@ -23,17 +23,6 @@ test('avatar upload backs up current avatar before overwriting target', async ()
 
     if (String(url).includes('/contents/assets%2Fprofile-avatar.png?ref=main') && method === 'GET') {
       return buildGithubContentResponse('assets/profile-avatar.png', 'avatar-sha', 'ZXhpc3RpbmctYXZhdGFy');
-    }
-
-    if (String(url).includes('/contents/assets%2Fprofile-avatar-backup.png?ref=main') && method === 'GET') {
-      return new Response(JSON.stringify({ message: 'Not Found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    if (String(url).includes('/contents/assets%2Fprofile-avatar-backup.png') && method === 'PUT') {
-      const body = JSON.parse(init.body);
-      assert.equal(body.content, 'ZXhpc3RpbmctYXZhdGFy');
-      assert.equal(body.message, 'cms: backup profile avatar');
-      return new Response(JSON.stringify({ content: { sha: 'backup-sha' }, commit: { sha: 'commit-backup' } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (String(url).includes('/contents/assets%2Fprofile-avatar.png') && method === 'PUT') {
@@ -69,9 +58,8 @@ test('avatar upload backs up current avatar before overwriting target', async ()
   const payload = await response.json();
   assert.equal(response.status, 200);
   assert.equal(payload.ok, true);
-  assert.equal(payload.backupPath, 'assets/profile-avatar-backup.png');
   assert.equal(payload.sha, 'new-avatar-sha');
-  assert.equal(calls.length, 4);
+  assert.equal(calls.length, 2);
 });
 
 test('avatar upload rejects non-png payloads', async () => {

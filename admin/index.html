@@ -320,7 +320,7 @@
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
             oauthScope: 'repo',
             imageExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-            hiddenAssetNames: ['og-banner.png', 'profile-avatar.jpg', 'profile-avatar.png', 'profile-avatar-backup.png', 'profile.jpg'],
+            hiddenAssetNames: ['og-banner.jpg', 'profile-avatar.jpg', 'profile-avatar.png', 'profile.jpg'],
             maxImageBytes: 5 * 1024 * 1024
         };
 
@@ -1136,7 +1136,6 @@
                 }
 
                 let existingAvatar = null;
-                let existingBackup = null;
 
                 try {
                     existingAvatar = await this.octokit.repos.getContent({
@@ -1151,25 +1150,6 @@
                     existingAvatar = null;
                 }
 
-                if (existingAvatar?.data?.content) {
-                    try {
-                        existingBackup = await this.octokit.repos.getContent({
-                            ...CONFIG,
-                            path: 'assets/profile-avatar-backup.png'
-                        });
-                    } catch (error) {
-                        if (error.status !== 404) throw error;
-                    }
-
-                    await this.octokit.repos.createOrUpdateFileContents({
-                        ...CONFIG,
-                        path: 'assets/profile-avatar-backup.png',
-                        message: 'cms: backup profile avatar',
-                        content: String(existingAvatar.data.content || '').replace(/\n/g, ''),
-                        sha: existingBackup?.data?.sha || undefined
-                    });
-                }
-
                 const savedAvatar = await this.octokit.repos.createOrUpdateFileContents({
                     ...CONFIG,
                     path: 'assets/profile-avatar.png',
@@ -1179,7 +1159,6 @@
                 });
 
                 return {
-                    backupPath: existingAvatar?.data?.content ? 'assets/profile-avatar-backup.png' : null,
                     sha: savedAvatar.data?.content?.sha || savedAvatar.content?.sha || null
                 };
             },
@@ -1214,14 +1193,12 @@
 
                 try {
                     await this.saveProfileSourceAsset();
-                    const result = await this.saveProfileAvatarAsset(dataUrl);
+                    await this.saveProfileAvatarAsset(dataUrl);
 
                     this.clearProfileDraftState();
                     this.refreshProfilePreview(dataUrl);
                     if (note) {
-                        note.textContent = result.backupPath
-                            ? 'Kaydedildi'
-                            : 'Kaydedildi';
+                        note.textContent = 'Kaydedildi';
                     }
                     this.setStatus('photos-status', 'Kaydedildi.', false);
                     await this.loadPhotos();
