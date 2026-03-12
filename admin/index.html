@@ -114,7 +114,7 @@
                     <div class="section-head">
                         <div>
                             <h3 style="margin:0 0 0.35rem 0;">Photos</h3>
-                            <div class="helper" style="margin:0;">Assets are stored in /assets and can be reused in posts.</div>
+                            <div class="helper" style="margin:0;">Assets are stored in /assets and can be reused in posts. System files and old generated variants are hidden.</div>
                         </div>
                         <div class="toolbar">
                             <input type="file" id="photo-upload-input" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif" style="max-width:320px; margin:0;">
@@ -162,6 +162,7 @@
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
             oauthScope: 'repo',
             imageExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+            hiddenAssetNames: ['og-banner.png', 'profile-avatar.jpg'],
             maxImageBytes: 5 * 1024 * 1024
         };
 
@@ -313,6 +314,10 @@
             isImageFile(name) {
                 const ext = String(name || '').split('.').pop().toLowerCase();
                 return CONFIG.imageExtensions.includes(ext);
+            },
+
+            isVisiblePhoto(name) {
+                return this.isImageFile(name) && !CONFIG.hiddenAssetNames.includes(String(name || '').toLowerCase());
             },
 
             async loadPosts() {
@@ -490,7 +495,7 @@
                 this.setStatus('photos-status', '');
                 try {
                     const { data } = await this.octokit.repos.getContent({ ...CONFIG, path: CONFIG.assetsPath });
-                    const photos = data.filter(file => file.type === 'file' && this.isImageFile(file.name));
+                    const photos = data.filter(file => file.type === 'file' && this.isVisiblePhoto(file.name));
                     if (!photos.length) {
                         grid.innerHTML = '<div class="empty-state" style="grid-column:1 / -1;">No images found in /assets yet.</div>';
                         return;
