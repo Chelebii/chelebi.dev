@@ -89,7 +89,7 @@ This repo now includes:
 - auth state in `sessionStorage`
 - trusted token exchange worker at `workers/auth.js`
 - server-side `ALLOWED_GITHUB_USERNAME` enforcement
-- sidebar views for `Posts`, `Bio`, `About`, and `Photos`
+- sidebar views for `Posts`, `Bio`, and `Photos`
 - shared CMS content logic in `admin/cms-core.js`
 - local tests in `admin/cms-core.test.mjs`
 

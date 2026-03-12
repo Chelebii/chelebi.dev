@@ -51,18 +51,6 @@
     ].join('\n');
   }
 
-  function buildAboutContent(body) {
-    return [
-      '---',
-      'layout: default',
-      'title: About',
-      'permalink: /about/',
-      '---',
-      '',
-      String(body || '')
-    ].join('\n');
-  }
-
   function dataUrlToBase64(dataUrl) {
     const value = String(dataUrl || '').trim();
     const match = value.match(/^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i);
@@ -157,7 +145,6 @@
     decodeContent,
     extractBody,
     buildPostContent,
-    buildAboutContent,
     dataUrlToBase64,
     uploadProfileAvatar,
     createGithubContentStore

@@ -60,7 +60,7 @@ function createFakeOctokit() {
 }
 
 test('extractBody removes frontmatter and preserves markdown body', () => {
-  const raw = ['---', 'layout: default', 'title: About', '---', '', '# Hello', '', 'Body'].join('\n');
+  const raw = ['---', 'layout: default', 'title: Sample', '---', '', '# Hello', '', 'Body'].join('\n');
   assert.equal(CmsCore.extractBody(raw), '# Hello\n\nBody');
 });
 
@@ -85,18 +85,6 @@ test('create update delete post flow works through content store', async () => {
 
   await store.remove(path, `cms: delete post ${path}`, updated.sha);
   await assert.rejects(() => store.get(path), { status: 404 });
-});
-
-test('about save flow writes canonical about frontmatter', async () => {
-  const octokit = createFakeOctokit();
-  const store = CmsCore.createGithubContentStore(octokit, { owner: 'Chelebii', repo: 'chelebi.dev', branch: 'main' });
-
-  await store.save('about.md', 'cms: update about page', CmsCore.buildAboutContent('About body here'));
-  const about = await store.get('about.md');
-
-  assert.match(about.text, /^---/);
-  assert.match(about.text, /title: About/);
-  assert.equal(CmsCore.extractBody(about.text), 'About body here');
 });
 
 test('uploadProfileAvatar posts png payload and auth token to worker', async () => {

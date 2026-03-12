@@ -149,7 +149,6 @@
             <ul class="sidebar-menu">
                 <li class="menu-item active" data-view="posts">Posts</li>
                 <li class="menu-item" data-view="bio">Bio & Social</li>
-                <li class="menu-item" data-view="about">About</li>
                 <li class="menu-item" data-view="photos">Photos</li>
             </ul>
             <div class="sidebar-footer"><button id="logout-btn" class="btn" style="width:100%; justify-content:center;">Logout</button></div>
@@ -174,16 +173,6 @@
                     <div id="bio-form">Loading config...</div>
                     <button class="btn btn-primary" onclick="app.saveConfig()">Save Changes</button>
                     <div id="config-status" class="status"></div>
-                </div>
-
-                <div id="view-about" class="view">
-                    <h3>About Page</h3>
-                    <label>Content</label>
-                    <div class="editor-container"><textarea id="about-content"></textarea></div>
-                    <div style="margin-top:1rem; display:flex; gap:1rem; flex-wrap:wrap;">
-                        <button class="btn btn-primary" onclick="app.saveAbout()">Save About</button>
-                    </div>
-                    <div id="about-status" class="status"></div>
                 </div>
 
                 <div id="view-photos" class="view">
@@ -326,7 +315,6 @@
             branch: 'main',
             postsPath: '_posts',
             configPath: '_config.yml',
-            aboutPath: 'about.md',
             assetsPath: 'assets',
             oauthClientId: window.CMS_GITHUB_CLIENT_ID || 'Ov23li1y2XvAHLXnnNxi',
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
@@ -340,8 +328,6 @@
             octokit: null,
             contentStore: null,
             easyMDE: null,
-            aboutMDE: null,
-            aboutSha: null,
             currentPostSha: null,
             currentAssetPath: null,
             profileEditor: {
@@ -444,13 +430,6 @@
                     toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'code', 'preview', 'side-by-side', 'fullscreen']
                 });
 
-                this.aboutMDE = new EasyMDE({
-                    element: document.getElementById('about-content'),
-                    spellChecker: false,
-                    status: false,
-                    toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'code', 'preview', 'side-by-side', 'fullscreen']
-                });
-
                 this.initProfilePhotoEditor();
             },
 
@@ -478,7 +457,6 @@
                 document.getElementById('view-title').textContent = view.charAt(0).toUpperCase() + view.slice(1);
                 if (view === 'posts') this.loadPosts();
                 if (view === 'bio') this.loadConfig();
-                if (view === 'about') this.loadAbout();
                 if (view === 'photos') this.loadPhotos();
             },
 
@@ -649,35 +627,6 @@
                     this.setStatus('config-status', 'Config saved.', false);
                 } catch (error) {
                     this.setStatus('config-status', error.message, true);
-                }
-            },
-
-            async loadAbout() {
-                this.setStatus('about-status', '');
-                try {
-                    const aboutFile = await this.contentStore.get(CONFIG.aboutPath);
-                    this.aboutSha = aboutFile.sha;
-                    this.aboutMDE.value(window.CmsCore.extractBody(aboutFile.text));
-                } catch (error) {
-                    if (error.status === 404) {
-                        this.aboutSha = null;
-                        this.aboutMDE.value('');
-                        this.setStatus('about-status', 'No about.md found yet. Write content and save to create it.', false);
-                    } else {
-                        this.setStatus('about-status', error.message, true);
-                    }
-                }
-            },
-
-            async saveAbout() {
-                const body = this.aboutMDE.value();
-                const content = window.CmsCore.buildAboutContent(body);
-                try {
-                    await this.contentStore.save(CONFIG.aboutPath, 'cms: update about page', content, this.aboutSha);
-                    this.setStatus('about-status', 'About page saved.', false);
-                    this.loadAbout();
-                } catch (error) {
-                    this.setStatus('about-status', error.message, true);
                 }
             },
 
