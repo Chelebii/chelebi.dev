@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Callback - chelebi.dev</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        .card { text-align: center; padding: 2rem; border: 1px solid var(--border); border-radius: 12px; max-width: 400px; }
+        .error { color: #b42318; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Logging in...</h2>
+        <p id="status">Exchanging authorization code...</p>
+    </div>
+    <script>
+        (async () => {
+            const status = document.getElementById('status');
+            const params = new URLSearchParams(location.search);
+            const code = params.get('code');
+            const state = params.get('state');
+            const stored = sessionStorage.getItem('oauth_state');
+
+            if (!code || state !== stored) {
+                status.textContent = 'Invalid OAuth response. Please try again.';
+                status.classList.add('error');
+                return;
+            }
+
+            const exchangeUrl = window.CMS_OAUTH_EXCHANGE_URL || localStorage.getItem('cms_oauth_exchange_url') || 'https://YOUR-WORKER/auth/github';
+            const redirectUri = `${location.origin}/admin/callback`;
+
+            try {
+                const res = await fetch(exchangeUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, redirect_uri: redirectUri })
+                });
+                const data = await res.json();
+
+                if (!res.ok || data.error) {
+                    throw new Error(data.error_description || data.error || `HTTP ${res.status}`);
+                }
+
+                if (!data.access_token) {
+                    throw new Error('No access token received.');
+                }
+
+                sessionStorage.setItem('gh_token', data.access_token);
+                sessionStorage.removeItem('oauth_state');
+                location.replace('/admin');
+            } catch (err) {
+                status.textContent = 'Login failed: ' + (err.message || err);
+                status.classList.add('error');
+            }
+        })();
+    </script>
+</body>
+</html>
