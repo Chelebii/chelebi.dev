@@ -57,30 +57,22 @@
         .callout { border: 1px dashed var(--border); border-radius: 12px; padding: 1rem; background: rgba(127, 127, 127, 0.06); margin-bottom: 1rem; }
         .empty-state { padding: 1.5rem; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); text-align: center; }
         .btn[disabled] { opacity: 0.58; cursor: not-allowed; }
-        .profile-studio { border: 1px solid var(--border); border-radius: 24px; background: var(--surface); padding: 1.5rem; margin-bottom: 1rem; box-shadow: var(--shadow); display: grid; gap: 1.25rem; }
+        .profile-studio { border: 1px solid var(--border); border-radius: 24px; background: var(--surface); padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow); display: grid; gap: 1rem; }
         .profile-studio-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
         .profile-studio-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; }
-        .eyebrow { margin: 0 0 0.45rem 0; color: var(--muted); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
         .profile-studio-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr); gap: 1.25rem; align-items: start; }
         .studio-stage-panel, .studio-sidebar { display: grid; gap: 1rem; }
-        .studio-card { border: 1px solid var(--border); border-radius: 20px; background: color-mix(in srgb, var(--surface) 84%, var(--bg) 16%); padding: 1rem; }
+        .studio-card { border: 1px solid var(--border); border-radius: 20px; background: color-mix(in srgb, var(--surface) 84%, var(--bg) 16%); padding: 0.9rem; }
         .profile-source-card { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        .profile-source-thumb { width: 88px; height: 88px; object-fit: cover; border-radius: 20px; border: 1px solid var(--border); background: #eef2f6; }
-        .profile-source-copy { min-width: 0; display: grid; gap: 0.35rem; }
+        .profile-source-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 18px; border: 1px solid var(--border); background: #eef2f6; }
+        .profile-source-copy { min-width: 0; display: grid; gap: 0.2rem; }
         .cropper-stage { min-height: 480px; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(127, 127, 127, 0.08), rgba(127, 127, 127, 0.16)); display: grid; place-items: center; }
         .cropper-stage img { display: block; max-width: 100%; }
         .cropper-stage.is-empty { border-style: dashed; background: rgba(127, 127, 127, 0.06); }
-        .cropper-empty { padding: 2rem; text-align: center; color: var(--muted); max-width: 22rem; }
+        .cropper-empty { padding: 2rem; text-align: center; color: var(--muted); max-width: 18rem; }
         .editor-controls { display: grid; gap: 1rem; }
         .control-group { display: grid; gap: 0.55rem; }
         .control-inline { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-        .nudge-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; width: min(240px, 100%); }
-        .nudge-grid .up { grid-column: 2; }
-        .nudge-grid .left { grid-column: 1; }
-        .nudge-grid .center { grid-column: 2; }
-        .nudge-grid .right { grid-column: 3; }
-        .nudge-grid .down { grid-column: 2; }
-        .nudge-grid button { justify-content: center; }
         .zoom-value { min-width: 3.25rem; font-variant-numeric: tabular-nums; color: var(--muted); }
         .preview-stack { display: grid; gap: 0.75rem; }
         .device-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -105,9 +97,9 @@
         .preview-line.short { width: 44%; }
         .preview-socials { display: flex; gap: 0.45rem; }
         .preview-socials span { width: 12px; height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--text) 14%, transparent); }
-        .studio-footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; padding-top: 0.25rem; border-top: 1px solid var(--border); }
+        .studio-footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; padding-top: 0.25rem; }
         .studio-footer-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-        .editor-note { color: var(--muted); font-size: 0.9rem; }
+        .editor-note { color: var(--muted); font-size: 0.86rem; }
         .asset-library { border: 1px solid var(--border); border-radius: 20px; background: var(--surface); overflow: hidden; }
         .asset-library > summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; font-weight: 600; }
         .asset-library > summary::-webkit-details-marker { display: none; }
@@ -197,22 +189,16 @@
                 <div id="view-photos" class="view">
                     <div class="section-head">
                         <div>
-                            <h3 style="margin:0 0 0.35rem 0;">Profile Photo</h3>
-                            <div class="helper" style="margin:0;">Use this studio to manage the homepage avatar and the mobile profile photo together.</div>
+                            <h3 style="margin:0;">Profil foto</h3>
                         </div>
                     </div>
                     <section class="profile-studio">
                         <div class="profile-studio-head">
-                            <div>
-                                <p class="eyebrow">Homepage avatar</p>
-                                <h4 style="margin:0 0 0.35rem 0;">Profile photo studio</h4>
-                                <div class="helper" style="margin:0;">Upload a new source photo, frame it once, then preview how it will look on web and mobile before you save.</div>
-                            </div>
                             <div class="profile-studio-actions">
                                 <input type="file" id="profile-source-input" class="hidden" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif">
-                                <button class="btn" id="profile-upload-btn" type="button" onclick="app.triggerProfileSourceUpload()">Upload new photo</button>
-                                <button class="btn btn-danger" id="profile-source-delete-btn" type="button" onclick="app.deleteProfileSource()">Delete source photo</button>
-                                <button class="btn btn-primary" id="profile-save-btn" type="button" onclick="app.commitProfilePreview()" data-profile-control disabled>Save profile photo</button>
+                                <button class="btn" id="profile-upload-btn" type="button" onclick="app.triggerProfileSourceUpload()">Foto sec</button>
+                                <button class="btn btn-danger" id="profile-source-delete-btn" type="button" onclick="app.deleteProfileSource()">Sil</button>
+                                <button class="btn btn-primary" id="profile-save-btn" type="button" onclick="app.commitProfilePreview()" data-profile-control disabled>Kaydet</button>
                             </div>
                         </div>
                         <div class="profile-studio-layout">
@@ -220,52 +206,34 @@
                                 <div class="studio-card profile-source-card">
                                     <img id="profile-source-thumb" class="profile-source-thumb" alt="Selected profile source">
                                     <div class="profile-source-copy">
-                                        <strong id="profile-source-title">Source photo</strong>
-                                        <div class="helper" id="profile-source-meta" style="margin:0;">The editor uses <code>/assets/profile.jpg</code> when it exists.</div>
-                                        <div class="helper" id="profile-source-note" style="margin:0;">Drag on the image for big moves, or use the controls for small nudges.</div>
+                                        <strong id="profile-source-title">Foto</strong>
+                                        <div class="helper" id="profile-source-meta" style="margin:0;"></div>
                                     </div>
                                 </div>
                                 <div class="cropper-stage is-empty" id="profile-cropper-stage">
                                     <img id="profile-editor-image" class="hidden" alt="Profile photo cropper stage">
                                     <div class="cropper-empty" id="profile-editor-empty">
-                                        Upload a new photo to start editing, or keep using the saved source photo if one already exists.
+                                        Foto sec
                                     </div>
                                 </div>
                             </div>
                             <aside class="studio-sidebar">
                                 <div class="studio-card editor-controls">
                                     <div class="control-group">
-                                        <label>Move</label>
-                                        <div class="nudge-grid">
-                                            <button class="btn btn-small up" type="button" onclick="app.nudgeProfile('up')" data-profile-control disabled>Up</button>
-                                            <button class="btn btn-small left" type="button" onclick="app.nudgeProfile('left')" data-profile-control disabled>Left</button>
-                                            <button class="btn btn-small center" type="button" onclick="app.centerProfileCrop()" data-profile-control disabled>Center</button>
-                                            <button class="btn btn-small right" type="button" onclick="app.nudgeProfile('right')" data-profile-control disabled>Right</button>
-                                            <button class="btn btn-small down" type="button" onclick="app.nudgeProfile('down')" data-profile-control disabled>Down</button>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
                                         <label for="profile-zoom-range">Zoom</label>
                                         <div class="control-inline">
-                                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(-0.1)" data-profile-control disabled>-</button>
-                                            <input id="profile-zoom-range" type="range" min="1" max="3" step="0.01" value="1" style="margin:0;" data-profile-control disabled>
-                                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(0.1)" data-profile-control disabled>+</button>
-                                            <span class="zoom-value" id="profile-zoom-value">100%</span>
+                                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(-5)" data-profile-control disabled>-</button>
+                                            <input id="profile-zoom-range" type="range" min="0" max="100" step="1" value="0" style="margin:0;" data-profile-control disabled>
+                                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(5)" data-profile-control disabled>+</button>
+                                            <span class="zoom-value" id="profile-zoom-value">0%</span>
                                         </div>
                                     </div>
-                                    <div class="control-group">
-                                        <label>Quick actions</label>
-                                        <div class="control-inline">
-                                            <button class="btn btn-small" id="profile-reset-btn" type="button" onclick="app.resetProfileEditor()" data-profile-control disabled>Reset framing</button>
-                                            <button class="btn btn-small" id="profile-download-btn" type="button" onclick="app.downloadProfilePreview()" data-profile-control disabled>Download PNG</button>
-                                        </div>
+                                    <div class="control-inline">
+                                        <button class="btn btn-small" id="profile-reset-btn" type="button" onclick="app.resetProfileEditor()" data-profile-control disabled>Sifirla</button>
+                                        <button class="btn btn-small" id="profile-download-btn" type="button" onclick="app.downloadProfilePreview()" data-profile-control disabled>Indir</button>
                                     </div>
                                 </div>
                                 <div class="preview-stack">
-                                    <div>
-                                        <strong>Before you save</strong>
-                                        <div class="helper" style="margin:0.3rem 0 0 0;">These previews mirror the current homepage desktop and mobile avatar styles.</div>
-                                    </div>
                                     <div class="device-preview-grid">
                                         <article class="device-preview">
                                             <p class="device-preview-label">Web</p>
@@ -312,23 +280,19 @@
                             </aside>
                         </div>
                         <div class="studio-footer">
-                            <div class="editor-note" id="profile-editor-note">Saving updates the live avatar at <code>/assets/profile-avatar.png</code> and keeps the editor source in <code>/assets/profile.jpg</code>.</div>
+                            <div class="editor-note" id="profile-editor-note"></div>
                             <div class="studio-footer-actions">
-                                <button class="btn" type="button" onclick="app.loadPhotos()">Refresh files</button>
+                                <button class="btn" type="button" onclick="app.loadPhotos()">Yenile</button>
                             </div>
                         </div>
                     </section>
                     <div id="photos-status" class="status"></div>
                     <details class="asset-library">
-                        <summary>Other photo assets</summary>
+                        <summary>Diger dosyalar</summary>
                         <div class="asset-library-body">
                             <div class="toolbar" style="margin-bottom:1rem;">
                                 <input type="file" id="photo-upload-input" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif" style="max-width:320px; margin:0;">
-                                <button class="btn btn-primary" onclick="app.uploadPhoto()">Upload Photo</button>
-                            </div>
-                            <div class="callout">
-                                <strong>Quick insert</strong>
-                                <div class="helper" style="margin:0.35rem 0 0 0;">Copy a file URL, then paste it into markdown like <code>![alt text](/assets/your-image.png)</code>.</div>
+                                <button class="btn btn-primary" onclick="app.uploadPhoto()">Yukle</button>
                             </div>
                             <div id="photos-grid" class="photo-grid"></div>
                         </div>
@@ -393,7 +357,9 @@
                 sourceBase64: '',
                 sourceFileName: '',
                 draftObjectUrl: '',
+                baseZoomRatio: 1,
                 zoomRatio: 1,
+                zoomPercent: 0,
                 outputDataUrl: '',
                 sourceReady: false,
                 sourceVersion: 0
@@ -739,9 +705,9 @@
                                         <div class="helper" style="margin:0.35rem 0 0 0;">${this.sanitizeAttribute(file.path)}</div>
                                     </div>
                                     <div class="photo-actions">
-                                        <button class="btn btn-small" onclick="app.copyPhotoUrl('${this.sanitizeAttribute(imageUrl)}')">Copy URL</button>
-                                        <button class="btn btn-small" onclick="app.prepareReplacePhoto('${this.sanitizeAttribute(file.path)}')">Replace</button>
-                                        <button class="btn btn-small btn-danger" onclick="app.deletePhoto('${this.sanitizeAttribute(file.path)}', '${this.sanitizeAttribute(file.sha)}')">Delete</button>
+                                        <button class="btn btn-small" onclick="app.copyPhotoUrl('${this.sanitizeAttribute(imageUrl)}')">URL kopyala</button>
+                                        <button class="btn btn-small" onclick="app.prepareReplacePhoto('${this.sanitizeAttribute(file.path)}')">Degistir</button>
+                                        <button class="btn btn-small btn-danger" onclick="app.deletePhoto('${this.sanitizeAttribute(file.path)}', '${this.sanitizeAttribute(file.sha)}')">Sil</button>
                                     </div>
                                 </div>
                             </article>
@@ -821,50 +787,45 @@
                 const thumb = document.getElementById('profile-source-thumb');
                 const title = document.getElementById('profile-source-title');
                 const meta = document.getElementById('profile-source-meta');
-                const note = document.getElementById('profile-source-note');
                 const deleteButton = document.getElementById('profile-source-delete-btn');
                 const thumbUrl = this.getProfilePreferredSourceUrl() || this.getProfileLivePreviewUrl();
 
                 if (thumb) thumb.src = thumbUrl || this.getProfilePlaceholderDataUrl();
 
                 if (editor.sourceDirty) {
-                    if (title) title.textContent = `Draft photo: ${editor.sourceFileName || 'new upload'}`;
-                    if (meta) meta.innerHTML = 'This draft stays local until you press <code>Save profile photo</code>.';
-                    if (note) note.textContent = 'Saving updates the editor source file and rebuilds the live avatar from the current crop.';
+                    if (title) title.textContent = editor.sourceFileName || 'Yeni foto';
+                    if (meta) meta.textContent = 'Kaydedilmedi';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Remove draft';
+                        deleteButton.textContent = 'Taslagi sil';
                         deleteButton.disabled = false;
                     }
                     return;
                 }
 
                 if (editor.sourceExists) {
-                    if (title) title.textContent = 'Saved source photo';
-                    if (meta) meta.innerHTML = 'Editing from <code>/assets/profile.jpg</code>. The live site still uses <code>/assets/profile-avatar.png</code>.';
-                    if (note) note.textContent = 'Drag for large movements, or use the move buttons for precise up, down, left, and right tweaks.';
+                    if (title) title.textContent = 'profile.jpg';
+                    if (meta) meta.textContent = 'Kaynak dosya';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Delete source photo';
+                        deleteButton.textContent = 'Sil';
                         deleteButton.disabled = false;
                     }
                     return;
                 }
 
                 if (editor.avatarExists) {
-                    if (title) title.textContent = 'No saved source photo';
-                    if (meta) meta.innerHTML = 'Falling back to the current live avatar in <code>/assets/profile-avatar.png</code>.';
-                    if (note) note.textContent = 'Upload a fresh source photo if you want better quality for future edits.';
+                    if (title) title.textContent = 'profile-avatar.png';
+                    if (meta) meta.textContent = 'Canli avatar';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Delete source photo';
+                        deleteButton.textContent = 'Sil';
                         deleteButton.disabled = true;
                     }
                     return;
                 }
 
-                if (title) title.textContent = 'No profile photo yet';
-                if (meta) meta.textContent = 'Upload a source photo to start editing the homepage avatar.';
-                if (note) note.textContent = 'Nothing is saved until you upload a photo and press Save profile photo.';
+                if (title) title.textContent = 'Foto yok';
+                if (meta) meta.textContent = '';
                 if (deleteButton) {
-                    deleteButton.textContent = 'Delete source photo';
+                    deleteButton.textContent = 'Sil';
                     deleteButton.disabled = true;
                 }
             },
@@ -920,7 +881,7 @@
                     this.profileEditor.draftObjectUrl = URL.createObjectURL(file);
                     this.profileEditor.imageUrl = this.profileEditor.draftObjectUrl;
                     this.loadProfileSourceImage(this.profileEditor.draftObjectUrl);
-                    this.setStatus('photos-status', `${file.name} loaded into the editor.`, false);
+                    this.setStatus('photos-status', `${file.name} hazir.`, false);
                 } catch (error) {
                     this.setStatus('photos-status', error.message || 'Could not load the selected photo.', true);
                 } finally {
@@ -965,7 +926,7 @@
                     });
                     input.value = '';
                     this.currentAssetPath = null;
-                    this.setStatus('photos-status', existingSha ? 'Image replaced.' : 'Image uploaded.', false);
+                    this.setStatus('photos-status', existingSha ? 'Guncellendi.' : 'Yuklendi.', false);
                     this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -983,16 +944,16 @@
                     } else {
                         this.renderEmptyProfileEditor();
                     }
-                    this.setStatus('photos-status', 'Draft photo removed from the editor.', false);
+                    this.setStatus('photos-status', 'Taslak silindi.', false);
                     return;
                 }
 
                 if (!editor.sourceExists || !editor.sourceSha) {
-                    this.setStatus('photos-status', 'There is no saved source photo to delete.', true);
+                    this.setStatus('photos-status', 'Silinecek foto yok.', true);
                     return;
                 }
 
-                if (!confirm('Delete assets/profile.jpg? The live avatar will stay in place until you save a new crop.')) {
+                if (!confirm('assets/profile.jpg silinsin mi?')) {
                     return;
                 }
 
@@ -1003,7 +964,7 @@
                         message: 'cms: delete profile source image',
                         sha: editor.sourceSha
                     });
-                    this.setStatus('photos-status', 'Saved source photo deleted.', false);
+                    this.setStatus('photos-status', 'Silindi.', false);
                     await this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -1034,7 +995,7 @@
                         input.value = '';
                         input.onchange = null;
                         this.currentAssetPath = null;
-                        this.setStatus('photos-status', `Image replaced at ${path}.`, false);
+                        this.setStatus('photos-status', 'Guncellendi.', false);
                         this.loadPhotos();
                     } catch (error) {
                         this.setStatus('photos-status', error.message, true);
@@ -1051,7 +1012,7 @@
                         message: `cms: delete image ${path.split('/').pop()}`,
                         sha
                     });
-                    this.setStatus('photos-status', 'Image deleted.', false);
+                    this.setStatus('photos-status', 'Silindi.', false);
                     this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -1062,12 +1023,12 @@
                 const zoomRange = document.getElementById('profile-zoom-range');
                 const sourceInput = document.getElementById('profile-source-input');
                 zoomRange.addEventListener('input', event => {
-                    this.setProfileZoom(Number(event.target.value || 1));
+                    this.setProfileZoom(Number(event.target.value || 0));
                 });
                 sourceInput.addEventListener('change', event => {
                     this.handleProfileSourceSelection(event);
                 });
-                this.updateProfileZoomLabel(1);
+                this.updateProfileZoomLabel(0);
                 this.updateProfileSourcePanel();
                 this.refreshProfilePreview(this.getProfilePlaceholderDataUrl());
             },
@@ -1147,41 +1108,50 @@
                     cropBoxResizable: false,
                     toggleDragModeOnDblclick: false,
                     ready: () => {
+                        const imageData = this.profileEditor.cropper.getImageData();
+                        const baseRatio = imageData.naturalWidth ? (imageData.width / imageData.naturalWidth) : 1;
                         this.profileEditor.sourceReady = true;
-                        this.profileEditor.zoomRatio = 1;
-                        document.getElementById('profile-zoom-range').value = '1';
-                        this.updateProfileZoomLabel(1);
+                        this.profileEditor.baseZoomRatio = baseRatio || 1;
+                        this.profileEditor.zoomRatio = this.profileEditor.baseZoomRatio;
+                        this.profileEditor.zoomPercent = 0;
+                        document.getElementById('profile-zoom-range').value = '0';
+                        this.updateProfileZoomLabel(0);
                         this.toggleProfileControls(true);
-                        document.getElementById('profile-editor-note').innerHTML = 'Fine-tune the framing here, then compare the Web and Mobile previews before saving.';
+                        document.getElementById('profile-editor-note').textContent = '';
                         this.refreshProfilePreview();
                     },
                     crop: () => this.refreshProfilePreview(),
                     zoom: event => {
-                        const nextZoom = Math.max(1, Math.min(3, Number(event.detail.ratio || 1)));
-                        this.profileEditor.zoomRatio = nextZoom;
-                        document.getElementById('profile-zoom-range').value = String(nextZoom);
-                        this.updateProfileZoomLabel(nextZoom);
+                        const nextRatio = Number(event.detail.ratio || 1);
+                        const baseRatio = this.profileEditor.baseZoomRatio || 1;
+                        const nextPercent = Math.max(0, Math.min(100, Math.round(((nextRatio / baseRatio) - 1) * 100)));
+                        this.profileEditor.zoomRatio = nextRatio;
+                        this.profileEditor.zoomPercent = nextPercent;
+                        document.getElementById('profile-zoom-range').value = String(nextPercent);
+                        this.updateProfileZoomLabel(nextPercent);
                     }
                 });
             },
 
             updateProfileZoomLabel(value) {
-                document.getElementById('profile-zoom-value').textContent = `${Math.round(value * 100)}%`;
+                document.getElementById('profile-zoom-value').textContent = `${Math.round(value)}%`;
             },
 
             setProfileZoom(value) {
                 const cropper = this.profileEditor.cropper;
                 if (!cropper || !this.profileEditor.sourceReady) return;
-                const safeValue = Math.max(1, Math.min(3, Number(value || 1)));
-                cropper.zoomTo(safeValue);
-                this.profileEditor.zoomRatio = safeValue;
+                const safeValue = Math.max(0, Math.min(100, Number(value || 0)));
+                const nextRatio = (this.profileEditor.baseZoomRatio || 1) * (1 + (safeValue / 100));
+                cropper.zoomTo(nextRatio);
+                this.profileEditor.zoomRatio = nextRatio;
+                this.profileEditor.zoomPercent = safeValue;
                 document.getElementById('profile-zoom-range').value = String(safeValue);
                 this.updateProfileZoomLabel(safeValue);
                 this.refreshProfilePreview();
             },
 
             bumpProfileZoom(delta) {
-                this.setProfileZoom(this.profileEditor.zoomRatio + Number(delta || 0));
+                this.setProfileZoom(this.profileEditor.zoomPercent + Number(delta || 0));
             },
 
             nudgeProfile(direction) {
@@ -1205,9 +1175,10 @@
                 const cropper = this.profileEditor.cropper;
                 if (!cropper) return;
                 cropper.reset();
-                this.profileEditor.zoomRatio = 1;
-                document.getElementById('profile-zoom-range').value = '1';
-                this.updateProfileZoomLabel(1);
+                this.profileEditor.zoomRatio = this.profileEditor.baseZoomRatio || 1;
+                this.profileEditor.zoomPercent = 0;
+                document.getElementById('profile-zoom-range').value = '0';
+                this.updateProfileZoomLabel(0);
                 this.refreshProfilePreview();
             },
 
@@ -1322,7 +1293,7 @@
                 const uploadButton = document.getElementById('profile-upload-btn');
                 const deleteButton = document.getElementById('profile-source-delete-btn');
                 const note = document.getElementById('profile-editor-note');
-                const previousLabel = saveButton ? saveButton.textContent : 'Save profile photo';
+                const previousLabel = saveButton ? saveButton.textContent : 'Kaydet';
                 const dataUrl = this.getProfilePreviewDataUrl(512);
 
                 if (!dataUrl || !dataUrl.startsWith('data:image/png;base64,')) {
@@ -1333,12 +1304,12 @@
                 this.toggleProfileControls(false);
                 if (saveButton) {
                     saveButton.disabled = true;
-                    saveButton.textContent = 'Saving...';
+                    saveButton.textContent = 'Kaydediliyor...';
                 }
                 if (uploadButton) uploadButton.disabled = true;
                 if (deleteButton) deleteButton.disabled = true;
-                if (note) note.textContent = 'Saving the source photo and live avatar to GitHub...';
-                this.setStatus('photos-status', 'Saving profile avatar...', false);
+                if (note) note.textContent = '';
+                this.setStatus('photos-status', 'Kaydediliyor...', false);
 
                 try {
                     await this.saveProfileSourceAsset();
@@ -1348,13 +1319,13 @@
                     this.refreshProfilePreview(dataUrl);
                     if (note) {
                         note.textContent = result.backupPath
-                            ? 'Saved. The live avatar and its backup were refreshed.'
-                            : 'Saved. The live avatar was refreshed.';
+                            ? 'Kaydedildi'
+                            : 'Kaydedildi';
                     }
-                    this.setStatus('photos-status', 'Profile photo saved successfully.', false);
+                    this.setStatus('photos-status', 'Kaydedildi.', false);
                     await this.loadPhotos();
                 } catch (error) {
-                    if (note) note.textContent = 'Save failed. Adjust the framing and try again.';
+                    if (note) note.textContent = 'Kaydetme hatasi';
                     this.setStatus('photos-status', error.message || 'Profile photo save failed.', true);
                 } finally {
                     if (saveButton) {
