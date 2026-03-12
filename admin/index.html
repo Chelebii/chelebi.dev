@@ -201,6 +201,7 @@
                 document.getElementById('login-btn').onclick = () => {
                     const state = Math.random().toString(36).substring(2, 15);
                     sessionStorage.setItem('oauth_state', state);
+                    localStorage.setItem('cms_oauth_exchange_url', CONFIG.oauthExchangeUrl);
                     const params = new URLSearchParams({
                         client_id: CONFIG.oauthClientId,
                         redirect_uri: `${location.origin}/admin/callback`,

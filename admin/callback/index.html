@@ -30,7 +30,7 @@
                 return;
             }
 
-            const exchangeUrl = window.CMS_OAUTH_EXCHANGE_URL || localStorage.getItem('cms_oauth_exchange_url') || 'https://YOUR-WORKER/auth/github';
+            const exchangeUrl = window.CMS_OAUTH_EXCHANGE_URL || localStorage.getItem('cms_oauth_exchange_url') || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github';
             const redirectUri = `${location.origin}/admin/callback`;
 
             try {
