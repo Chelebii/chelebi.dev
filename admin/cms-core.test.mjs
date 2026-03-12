@@ -98,3 +98,40 @@ test('about save flow writes canonical about frontmatter', async () => {
   assert.match(about.text, /title: About/);
   assert.equal(CmsCore.extractBody(about.text), 'About body here');
 });
+
+test('uploadProfileAvatar posts png payload and auth token to worker', async () => {
+  const calls = [];
+  global.fetch = async (url, init = {}) => {
+    calls.push({ url: String(url), init });
+    return new Response(JSON.stringify({ ok: true, backupPath: 'assets/profile-avatar-backup.png' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  };
+
+  const result = await CmsCore.uploadProfileAvatar({
+    workerUrl: 'https://worker.example/api/avatar-upload',
+    token: 'gh-token',
+    imageDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO2pW8QAAAAASUVORK5CYII='
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://worker.example/api/avatar-upload');
+  assert.equal(calls[0].init.method, 'POST');
+  assert.equal(calls[0].init.headers.Authorization, 'Bearer gh-token');
+
+  const body = JSON.parse(calls[0].init.body);
+  assert.equal(body.mimeType, 'image/png');
+  assert.equal(body.targetPath, 'assets/profile-avatar.png');
+  assert.equal(body.backupPath, 'assets/profile-avatar-backup.png');
+  assert.match(body.imageBase64, /^iVBORw0KGgo/);
+});
+
+test('uploadProfileAvatar rejects invalid data urls before sending', async () => {
+  await assert.rejects(() => CmsCore.uploadProfileAvatar({
+    workerUrl: 'https://worker.example/api/avatar-upload',
+    token: 'gh-token',
+    imageDataUrl: 'not-a-data-url'
+  }), /base64 image data URL/);
+});

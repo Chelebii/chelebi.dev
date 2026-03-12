@@ -6,7 +6,9 @@
     <title>CMS Admin - chelebi.dev</title>
     <link rel="stylesheet" href="/assets/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
     <script type="module">
         import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
         window.Octokit = Octokit;
@@ -54,6 +56,40 @@
         .toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
         .callout { border: 1px dashed var(--border); border-radius: 12px; padding: 1rem; background: rgba(127, 127, 127, 0.06); margin-bottom: 1rem; }
         .empty-state { padding: 1.5rem; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); text-align: center; }
+        .profile-editor-card { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+        .profile-editor-summary { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); gap: 1rem; align-items: center; }
+        .profile-editor-source { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .profile-editor-source img { width: 96px; height: 96px; object-fit: cover; border-radius: 18px; border: 1px solid var(--border); background: #eef2f6; }
+        .profile-editor-meta { display: grid; gap: 0.35rem; }
+        .avatar-preview-panel { display: grid; gap: 0.85rem; justify-items: start; }
+        .avatar-preview-frame { width: 164px; height: 164px; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 82%, #dfe6ef 18%); display: flex; align-items: center; justify-content: center; }
+        .avatar-preview-frame.round { border-radius: 999px; }
+        .avatar-preview-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-editor-modal { position: fixed; inset: 0; background: rgba(7, 10, 16, 0.72); display: none; align-items: center; justify-content: center; padding: 2rem; z-index: 1000; }
+        .profile-editor-modal.active { display: flex; }
+        .profile-editor-dialog { width: min(1080px, 100%); max-height: calc(100vh - 4rem); overflow: auto; background: var(--surface); color: var(--text); border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32); padding: 1.5rem; display: grid; gap: 1.25rem; }
+        .profile-editor-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr); gap: 1.25rem; align-items: start; }
+        .cropper-stage { min-height: 420px; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: linear-gradient(135deg, rgba(127, 127, 127, 0.08), rgba(127, 127, 127, 0.16)); }
+        .cropper-stage img { display: block; max-width: 100%; }
+        .editor-controls { display: grid; gap: 1rem; }
+        .control-group { display: grid; gap: 0.55rem; }
+        .control-inline { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .segmented { display: inline-flex; padding: 0.25rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); gap: 0.25rem; }
+        .segmented button { border: 0; background: transparent; color: var(--muted); padding: 0.45rem 0.8rem; border-radius: 999px; cursor: pointer; }
+        .segmented button.active { background: var(--text); color: var(--bg); }
+        .zoom-value { min-width: 3.25rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+        .preview-stack { display: grid; gap: 0.75rem; }
+        .preview-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .preview-tile { display: grid; gap: 0.5rem; }
+        .preview-tile .avatar-preview-frame { width: 132px; height: 132px; }
+        .preview-tile.small .avatar-preview-frame { width: 72px; height: 72px; border-radius: 18px; }
+        .editor-actions { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        .editor-note { color: var(--muted); font-size: 0.9rem; }
+        @media (max-width: 900px) {
+            .profile-editor-summary, .profile-editor-layout { grid-template-columns: 1fr; }
+            .profile-editor-dialog { padding: 1rem; }
+            .cropper-stage { min-height: 320px; }
+        }
     </style>
 </head>
 <body>
@@ -125,6 +161,32 @@
                         <strong>Quick insert</strong>
                         <div class="helper" style="margin:0.35rem 0 0 0;">Copy a file URL, then paste it into markdown like <code>![alt text](/assets/your-image.png)</code>.</div>
                     </div>
+                    <section class="profile-editor-card">
+                        <div class="section-head" style="margin-bottom:0.75rem;">
+                            <div>
+                                <h4 style="margin:0 0 0.35rem 0;">Profile photo editor</h4>
+                                <div class="helper" style="margin:0;">Crop, zoom, pan, and preview the avatar from <code>/assets/profile.jpg</code>, then save it straight to <code>/assets/profile-avatar.png</code>.</div>
+                            </div>
+                            <button class="btn btn-primary" onclick="app.openProfilePhotoEditor()">Edit profile photo</button>
+                        </div>
+                        <div class="profile-editor-summary">
+                            <div class="profile-editor-source">
+                                <img src="/assets/profile.jpg" alt="Profile source image">
+                                <div class="profile-editor-meta">
+                                    <strong>Source</strong>
+                                    <span class="helper" style="margin:0;">Uses <code>Cropper.js</code> with drag-to-pan and slider zoom.</span>
+                                    <span class="helper" style="margin:0;">Current target file: <code>/assets/profile-avatar.png</code></span>
+                                </div>
+                            </div>
+                            <div class="avatar-preview-panel">
+                                <div class="helper" style="margin:0;">Latest preview</div>
+                                <div class="avatar-preview-frame" id="profile-editor-summary-frame">
+                                    <img id="profile-editor-summary-image" src="/assets/profile-avatar.png" alt="Current avatar preview">
+                                </div>
+                                <div class="helper" id="profile-editor-summary-note" style="margin:0;">Current live avatar</div>
+                            </div>
+                        </div>
+                    </section>
                     <div id="photos-status" class="status"></div>
                     <div id="photos-grid" class="photo-grid"></div>
                 </div>
@@ -160,6 +222,7 @@
             assetsPath: 'assets',
             oauthClientId: window.CMS_GITHUB_CLIENT_ID || 'Ov23li1y2XvAHLXnnNxi',
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
+            avatarUploadUrl: window.CMS_AVATAR_UPLOAD_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/api/avatar-upload',
             oauthScope: 'repo',
             imageExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
             hiddenAssetNames: ['og-banner.png', 'profile-avatar.jpg'],
@@ -174,6 +237,14 @@
             aboutSha: null,
             currentPostSha: null,
             currentAssetPath: null,
+            profileEditor: {
+                cropper: null,
+                imageUrl: '/assets/profile.jpg',
+                activeShape: 'square',
+                zoomRatio: 1,
+                outputDataUrl: '/assets/profile-avatar.png',
+                sourceReady: false
+            },
 
             async init() {
                 const token = sessionStorage.getItem('gh_token');
@@ -260,6 +331,8 @@
                     status: false,
                     toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'code', 'preview', 'side-by-side', 'fullscreen']
                 });
+
+                this.initProfilePhotoEditor();
             },
 
             showAdmin() {
@@ -633,6 +706,236 @@
                 }
             },
 
+            initProfilePhotoEditor() {
+                const zoomRange = document.getElementById('profile-zoom-range');
+                const modal = document.getElementById('profile-editor-modal');
+                const shapeButtons = Array.from(document.querySelectorAll('#profile-shape-switch button'));
+                zoomRange.addEventListener('input', event => {
+                    this.setProfileZoom(Number(event.target.value || 1));
+                });
+                shapeButtons.forEach(button => {
+                    button.addEventListener('click', () => this.setProfileShape(button.dataset.shape || 'square'));
+                });
+                modal.addEventListener('click', event => {
+                    if (event.target === modal) this.closeProfilePhotoEditor();
+                });
+                this.refreshProfilePreview(this.profileEditor.outputDataUrl);
+            },
+
+            openProfilePhotoEditor() {
+                const modal = document.getElementById('profile-editor-modal');
+                const image = document.getElementById('profile-editor-image');
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+                image.onload = () => {
+                    this.mountProfileCropper();
+                    image.onload = null;
+                };
+                image.src = this.profileEditor.imageUrl + '?v=' + Date.now();
+            },
+
+            closeProfilePhotoEditor() {
+                const modal = document.getElementById('profile-editor-modal');
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                this.destroyProfileCropper();
+            },
+
+            destroyProfileCropper() {
+                if (this.profileEditor.cropper) {
+                    this.profileEditor.cropper.destroy();
+                    this.profileEditor.cropper = null;
+                }
+                this.profileEditor.sourceReady = false;
+            },
+
+            mountProfileCropper() {
+                this.destroyProfileCropper();
+                const image = document.getElementById('profile-editor-image');
+                this.profileEditor.cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.92,
+                    background: false,
+                    responsive: true,
+                    guides: false,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    ready: () => {
+                        this.profileEditor.sourceReady = true;
+                        this.profileEditor.zoomRatio = 1;
+                        document.getElementById('profile-zoom-range').value = '1';
+                        this.updateProfileZoomLabel(1);
+                        this.setProfileShape(this.profileEditor.activeShape, false);
+                        this.refreshProfilePreview();
+                    },
+                    crop: () => this.refreshProfilePreview(),
+                    zoom: event => {
+                        const nextZoom = Math.max(1, Math.min(3, 1 + event.detail.ratio));
+                        this.profileEditor.zoomRatio = nextZoom;
+                        document.getElementById('profile-zoom-range').value = String(nextZoom);
+                        this.updateProfileZoomLabel(nextZoom);
+                    }
+                });
+            },
+
+            setProfileShape(shape, rerender = true) {
+                this.profileEditor.activeShape = shape == 'round' ? 'round' : 'square';
+                document.querySelectorAll('#profile-shape-switch button').forEach(button => {
+                    button.classList.toggle('active', button.dataset.shape === this.profileEditor.activeShape);
+                });
+                const isRound = this.profileEditor.activeShape === 'round';
+                document.getElementById('profile-preview-large-frame').classList.toggle('round', isRound);
+                document.getElementById('profile-editor-summary-frame').classList.toggle('round', isRound);
+                if (rerender) this.refreshProfilePreview();
+            },
+
+            updateProfileZoomLabel(value) {
+                document.getElementById('profile-zoom-value').textContent = `${Math.round(value * 100)}%`;
+            },
+
+            setProfileZoom(value) {
+                const cropper = this.profileEditor.cropper;
+                if (!cropper || !this.profileEditor.sourceReady) return;
+                const safeValue = Math.max(1, Math.min(3, Number(value || 1)));
+                cropper.zoomTo(safeValue);
+                this.profileEditor.zoomRatio = safeValue;
+                document.getElementById('profile-zoom-range').value = String(safeValue);
+                this.updateProfileZoomLabel(safeValue);
+                this.refreshProfilePreview();
+            },
+
+            bumpProfileZoom(delta) {
+                this.setProfileZoom(this.profileEditor.zoomRatio + Number(delta || 0));
+            },
+
+            centerProfileCrop() {
+                const cropper = this.profileEditor.cropper;
+                if (!cropper) return;
+                cropper.reset();
+                this.profileEditor.zoomRatio = 1;
+                document.getElementById('profile-zoom-range').value = '1';
+                this.updateProfileZoomLabel(1);
+                this.refreshProfilePreview();
+            },
+
+            resetProfileEditor() {
+                this.centerProfileCrop();
+                this.setProfileShape('square');
+            },
+
+            getProfilePreviewDataUrl(size = 512) {
+                const cropper = this.profileEditor.cropper;
+                if (!cropper) return this.profileEditor.outputDataUrl;
+                const canvas = cropper.getCroppedCanvas({
+                    width: size,
+                    height: size,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+                    fillColor: 'transparent'
+                });
+                if (!canvas) return this.profileEditor.outputDataUrl;
+                if (this.profileEditor.activeShape === 'round') {
+                    const maskCanvas = document.createElement('canvas');
+                    maskCanvas.width = size;
+                    maskCanvas.height = size;
+                    const context = maskCanvas.getContext('2d');
+                    context.clearRect(0, 0, size, size);
+                    context.save();
+                    context.beginPath();
+                    context.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                    context.closePath();
+                    context.clip();
+                    context.drawImage(canvas, 0, 0, size, size);
+                    context.restore();
+                    return maskCanvas.toDataURL('image/png');
+                }
+                return canvas.toDataURL('image/png');
+            },
+
+            refreshProfilePreview(forcedDataUrl = '') {
+                const output = forcedDataUrl || this.getProfilePreviewDataUrl();
+                this.profileEditor.outputDataUrl = output;
+                ['profile-preview-large', 'profile-preview-small', 'profile-editor-summary-image'].forEach(id => {
+                    const node = document.getElementById(id);
+                    if (node) node.src = output;
+                });
+            },
+
+            async commitProfilePreview() {
+                if (!this.octokit || !this.contentStore) {
+                    this.setStatus('photos-status', 'Login is required before saving the profile photo.', true);
+                    return;
+                }
+
+                const saveButton = document.querySelector('#profile-editor-modal .btn.btn-primary');
+                const cancelButton = document.querySelector('#profile-editor-modal .editor-actions .btn');
+                const note = document.getElementById('profile-editor-note');
+                const previousLabel = saveButton ? saveButton.textContent : 'Kaydet';
+                const dataUrl = this.getProfilePreviewDataUrl(512);
+
+                if (!dataUrl || !dataUrl.startsWith('data:image/png;base64,')) {
+                    this.setStatus('photos-status', 'Could not generate a PNG preview for saving.', true);
+                    return;
+                }
+
+                if (saveButton) saveButton.disabled = true;
+                if (cancelButton) cancelButton.disabled = true;
+                if (note) note.textContent = 'Saving avatar to GitHub...';
+                this.setStatus('photos-status', 'Saving profile avatar...', false);
+
+                try {
+                    const result = await window.CmsCore.uploadProfileAvatar({
+                        workerUrl: CONFIG.avatarUploadUrl,
+                        token: sessionStorage.getItem('gh_token'),
+                        imageDataUrl: dataUrl,
+                        targetPath: 'assets/profile-avatar.png',
+                        backupPath: 'assets/profile-avatar-backup.png',
+                        sourcePath: 'assets/profile.jpg',
+                        commitMessage: 'cms: update profile avatar',
+                        backupMessage: 'cms: backup profile avatar'
+                    });
+
+                    this.refreshProfilePreview(dataUrl);
+                    const cacheBustUrl = `/assets/profile-avatar.png?v=${Date.now()}`;
+                    const summaryImage = document.getElementById('profile-editor-summary-image');
+                    if (summaryImage) summaryImage.src = cacheBustUrl;
+                    ['profile-preview-large', 'profile-preview-small'].forEach(id => {
+                        const node = document.getElementById(id);
+                        if (node) node.src = dataUrl;
+                    });
+                    document.getElementById('profile-editor-summary-note').textContent = result.backupPath
+                        ? 'Saved to /assets/profile-avatar.png and backup refreshed.'
+                        : 'Saved to /assets/profile-avatar.png.';
+                    if (note) note.textContent = 'Kaydet uploads the current PNG to GitHub, refreshes the live avatar preview, and keeps a backup.';
+                    this.setStatus('photos-status', 'Profile photo saved successfully.', false);
+                    await this.loadPhotos();
+                    this.closeProfilePhotoEditor();
+                } catch (error) {
+                    if (note) note.textContent = 'Save failed. Adjust the crop and try again.';
+                    this.setStatus('photos-status', error.message || 'Profile photo save failed.', true);
+                } finally {
+                    if (saveButton) {
+                        saveButton.disabled = false;
+                        saveButton.textContent = previousLabel;
+                    }
+                    if (cancelButton) cancelButton.disabled = false;
+                }
+            },
+
+            downloadProfilePreview() {
+                const dataUrl = this.getProfilePreviewDataUrl();
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'profile-avatar-preview.png';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            },
+
             async copyPhotoUrl(url) {
                 try {
                     await navigator.clipboard.writeText(url);
@@ -646,5 +949,74 @@
         window.app = app;
         window.onload = () => app.init();
     </script>
+    <div id="profile-editor-modal" class="profile-editor-modal" aria-hidden="true">
+        <div class="profile-editor-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-editor-title">
+            <div class="section-head" style="margin-bottom:0;">
+                <div>
+                    <h3 id="profile-editor-title" style="margin:0 0 0.35rem 0;">Profile photo editor</h3>
+                    <div class="helper" style="margin:0;">Adjust the framing here, then save the generated PNG directly through the CMS worker.</div>
+                </div>
+                <button class="btn" type="button" onclick="app.closeProfilePhotoEditor()">Close</button>
+            </div>
+            <div class="profile-editor-layout">
+                <div class="cropper-stage">
+                    <img id="profile-editor-image" alt="Profile photo cropper stage">
+                </div>
+                <aside class="editor-controls">
+                    <div class="control-group">
+                        <label for="profile-zoom-range">Zoom</label>
+                        <div class="control-inline">
+                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(-0.1)">-</button>
+                            <input id="profile-zoom-range" type="range" min="1" max="3" step="0.01" value="1" style="margin:0;">
+                            <button class="btn btn-small" type="button" onclick="app.bumpProfileZoom(0.1)">+</button>
+                            <span class="zoom-value" id="profile-zoom-value">100%</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Crop shape</label>
+                        <div class="segmented" id="profile-shape-switch">
+                            <button type="button" class="active" data-shape="square">Square</button>
+                            <button type="button" data-shape="round">Round</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Quick actions</label>
+                        <div class="control-inline">
+                            <button class="btn btn-small" type="button" onclick="app.centerProfileCrop()">Center</button>
+                            <button class="btn btn-small" type="button" onclick="app.resetProfileEditor()">Reset</button>
+                            <button class="btn btn-small" type="button" onclick="app.downloadProfilePreview()">Download PNG</button>
+                        </div>
+                    </div>
+                    <div class="preview-stack">
+                        <div>
+                            <strong>Live preview</strong>
+                            <div class="helper" style="margin:0.3rem 0 0 0;">Preview updates while you drag, crop, and zoom.</div>
+                        </div>
+                        <div class="preview-grid">
+                            <div class="preview-tile">
+                                <div class="avatar-preview-frame" id="profile-preview-large-frame">
+                                    <img id="profile-preview-large" alt="Large avatar preview">
+                                </div>
+                                <span class="helper" style="margin:0;">Primary</span>
+                            </div>
+                            <div class="preview-tile small">
+                                <div class="avatar-preview-frame round" id="profile-preview-small-frame">
+                                    <img id="profile-preview-small" alt="Small avatar preview">
+                                </div>
+                                <span class="helper" style="margin:0;">Round</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <div class="editor-actions">
+                <div class="editor-note" id="profile-editor-note">Kaydet uploads the current PNG to GitHub, refreshes the live avatar preview, and keeps a backup.</div>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <button class="btn" type="button" onclick="app.closeProfilePhotoEditor()">Iptal</button>
+                    <button class="btn btn-primary" type="button" onclick="app.commitProfilePreview()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

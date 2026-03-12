@@ -4,6 +4,9 @@ compatibility_date = "2024-01-01"
 
 [vars]
 ALLOWED_GITHUB_USERNAME = "Chelebii"
+GITHUB_REPO_OWNER = "Chelebii"
+GITHUB_REPO_NAME = "chelebi.dev"
+GITHUB_REPO_BRANCH = "main"
 
 # Set these as secrets via: wrangler secret put GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET
 # Do NOT put secrets in this file.
