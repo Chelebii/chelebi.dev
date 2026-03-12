@@ -217,9 +217,7 @@ select {
   object-fit: cover;
   object-position: center 0%;
   background: var(--surface);
-  image-rendering: auto;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  image-rendering: high-quality;
 }
 
 .profile-copy {
