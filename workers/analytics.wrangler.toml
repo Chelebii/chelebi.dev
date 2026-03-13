@@ -4,6 +4,7 @@ compatibility_date = "2026-03-12"
 
 [vars]
 ALLOWED_ORIGIN = "https://chelebi.dev"
+ALLOWED_GITHUB_USERNAME = "Chelebii"
 
 [[d1_databases]]
 binding = "ANALYTICS_DB"

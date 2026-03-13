@@ -104,6 +104,32 @@
         .asset-library > summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; font-weight: 600; }
         .asset-library > summary::-webkit-details-marker { display: none; }
         .asset-library-body { padding: 0 1.25rem 1.25rem; }
+        .analytics-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .segmented-control { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .segmented-control .btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+        .analytics-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 1rem; }
+        .metric-card { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1rem; display: grid; gap: 0.35rem; }
+        .metric-label { color: var(--muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .metric-value { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+        .metric-meta { color: var(--muted); font-size: 0.84rem; }
+        .analytics-stack { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); margin-bottom: 1rem; }
+        .analytics-panel { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+        .analytics-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1rem 0.75rem; }
+        .analytics-panel-title { margin: 0; font-size: 0.95rem; }
+        .analytics-panel-body { padding: 0 1rem 1rem; }
+        .analytics-table { width: 100%; border-collapse: collapse; }
+        .analytics-table th,
+        .analytics-table td { padding: 0.8rem 0; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+        .analytics-table th { color: var(--muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .analytics-table td { font-size: 0.9rem; }
+        .analytics-table tbody tr:last-child td { border-bottom: 0; }
+        .analytics-subtle { color: var(--muted); font-size: 0.82rem; }
+        .analytics-target { display: grid; gap: 0.15rem; }
+        .analytics-target code { font-size: 0.82rem; word-break: break-word; }
+        .analytics-kicker { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; }
+        .analytics-type-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); margin-bottom: 1rem; }
+        .analytics-type-card { border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem; background: color-mix(in srgb, var(--surface) 92%, var(--bg) 8%); display: grid; gap: 0.25rem; }
+        .analytics-empty { padding: 1rem 0; color: var(--muted); font-size: 0.9rem; }
         @media (max-width: 820px) {
             body { height: auto; overflow: auto; }
             #admin-panel { flex-direction: column; height: auto; min-height: 100vh; }
@@ -117,7 +143,7 @@
             .top-bar { padding: 0 1rem; }
         }
         @media (max-width: 900px) {
-            .profile-studio-layout, .device-preview-grid { grid-template-columns: 1fr; }
+            .profile-studio-layout, .device-preview-grid, .analytics-stack { grid-template-columns: 1fr; }
             .device-frame.mobile { max-width: none; }
             .cropper-stage { min-height: 360px; }
         }
@@ -129,6 +155,7 @@
             .profile-studio-actions, .studio-footer-actions { width: 100%; }
             .preview-shell.desktop { grid-template-columns: 72px minmax(0, 1fr); }
             .preview-avatar.desktop { width: 72px; height: 72px; }
+            .analytics-toolbar, .analytics-panel-header { align-items: flex-start; }
         }
     </style>
 </head>
@@ -148,6 +175,7 @@
             <div class="sidebar-header"><strong>chelebi.dev</strong></div>
             <ul class="sidebar-menu">
                 <li class="menu-item active" data-view="posts">Posts</li>
+                <li class="menu-item" data-view="analytics">Analytics</li>
                 <li class="menu-item" data-view="bio">Bio & Social</li>
                 <li class="menu-item" data-view="photos">Photos</li>
             </ul>
@@ -173,6 +201,49 @@
                     <div id="bio-form">Loading config...</div>
                     <button class="btn btn-primary" onclick="app.saveConfig()">Save Changes</button>
                     <div id="config-status" class="status"></div>
+                </div>
+
+                <div id="view-analytics" class="view">
+                    <div class="analytics-toolbar">
+                        <div class="segmented-control" role="group" aria-label="Analytics date range">
+                            <button class="btn btn-small active" type="button" data-analytics-range="7" onclick="app.setAnalyticsRange(7)">7D</button>
+                            <button class="btn btn-small" type="button" data-analytics-range="30" onclick="app.setAnalyticsRange(30)">30D</button>
+                            <button class="btn btn-small" type="button" data-analytics-range="90" onclick="app.setAnalyticsRange(90)">90D</button>
+                        </div>
+                        <button class="btn" type="button" onclick="app.loadAnalytics(true)">Yenile</button>
+                    </div>
+                    <div class="callout">
+                        <strong>Anonymous analytics</strong>
+                        <div class="helper" style="margin:0.35rem 0 0 0;">Only aggregate page views, active time, scroll depth, exits, and link clicks are shown here.</div>
+                    </div>
+                    <div id="analytics-summary" class="analytics-grid"></div>
+                    <div class="analytics-stack">
+                        <section class="analytics-panel">
+                            <div class="analytics-panel-header">
+                                <h3 class="analytics-panel-title">Top pages</h3>
+                                <div class="analytics-subtle" id="analytics-pages-meta"></div>
+                            </div>
+                            <div class="analytics-panel-body" id="analytics-pages"></div>
+                        </section>
+                        <section class="analytics-panel">
+                            <div class="analytics-panel-header">
+                                <h3 class="analytics-panel-title">Clicks</h3>
+                                <div class="analytics-subtle" id="analytics-clicks-meta"></div>
+                            </div>
+                            <div class="analytics-panel-body">
+                                <div id="analytics-click-types" class="analytics-type-grid"></div>
+                                <div id="analytics-clicks"></div>
+                            </div>
+                        </section>
+                    </div>
+                    <section class="analytics-panel">
+                        <div class="analytics-panel-header">
+                            <h3 class="analytics-panel-title">Daily trend</h3>
+                            <div class="analytics-subtle" id="analytics-daily-meta"></div>
+                        </div>
+                        <div class="analytics-panel-body" id="analytics-daily"></div>
+                    </section>
+                    <div id="analytics-status" class="status"></div>
                 </div>
 
                 <div id="view-photos" class="view">
@@ -320,6 +391,7 @@
             assetsPath: 'assets',
             oauthClientId: window.CMS_GITHUB_CLIENT_ID || 'Ov23li1y2XvAHLXnnNxi',
             oauthExchangeUrl: window.CMS_OAUTH_EXCHANGE_URL || 'https://chelebi-cms-auth.arifcelebi-uk.workers.dev/auth/github',
+            analyticsApiUrl: window.CMS_ANALYTICS_API_URL || 'https://chelebi-anonymous-analytics.arifcelebi-uk.workers.dev',
             oauthScope: 'repo',
             imageExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
             hiddenAssetNames: ['og-banner.jpg', 'profile-avatar.jpg', 'profile-avatar.png', 'profile.jpg'],
@@ -332,6 +404,8 @@
             easyMDE: null,
             currentPostSha: null,
             currentAssetPath: null,
+            analyticsRangeDays: 7,
+            analyticsLoading: false,
             profileEditor: {
                 cropper: null,
                 imageUrl: '',
@@ -361,6 +435,7 @@
                     try {
                         await this.octokit.users.getAuthenticated();
                         this.showAdmin();
+                        this.updateViewHeader('posts');
                         this.loadPosts();
                     } catch (error) {
                         this.showAuthError();
@@ -402,6 +477,8 @@
                 });
 
                 this.initProfilePhotoEditor();
+                this.updateAnalyticsRangeButtons();
+                this.renderAnalyticsLoading();
             },
 
             showAdmin() {
@@ -419,14 +496,55 @@
                 this.setStatus('auth-error', 'Invalid token or unauthorized.', true);
             },
 
+            getViewMeta(view) {
+                const meta = {
+                    posts: {
+                        title: 'Posts',
+                        note: 'Repo writes go through GitHub contents API.'
+                    },
+                    analytics: {
+                        title: 'Analytics',
+                        note: 'Anonymous aggregate metrics are loaded from Cloudflare D1.'
+                    },
+                    bio: {
+                        title: 'Bio & Social',
+                        note: 'Profile fields are written directly to _config.yml in GitHub.'
+                    },
+                    photos: {
+                        title: 'Photos',
+                        note: 'Image assets are managed directly in the GitHub repository.'
+                    },
+                    editor: {
+                        title: 'Editor',
+                        note: 'Post drafts are saved directly into the repository.'
+                    }
+                };
+
+                return meta[view] || {
+                    title: view.charAt(0).toUpperCase() + view.slice(1),
+                    note: 'Repo writes go through GitHub contents API.'
+                };
+            },
+
+            updateViewHeader(view) {
+                const meta = this.getViewMeta(view);
+                document.getElementById('view-title').textContent = meta.title;
+                document.getElementById('session-note').textContent = meta.note;
+            },
+
+            getGithubToken() {
+                return sessionStorage.getItem('gh_token') || '';
+            },
+
             switchView(view) {
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                 document.getElementById(`view-${view}`).classList.add('active');
                 document.querySelectorAll('.menu-item').forEach(m => {
                     m.classList.toggle('active', m.dataset.view === view);
                 });
-                document.getElementById('view-title').textContent = view.charAt(0).toUpperCase() + view.slice(1);
+                this.updateViewHeader(view);
                 if (view === 'posts') this.loadPosts();
+                if (view === 'analytics') this.loadAnalytics();
                 if (view === 'bio') this.loadConfig();
                 if (view === 'photos') this.loadPhotos();
             },
@@ -459,6 +577,309 @@
 
             isVisiblePhoto(name) {
                 return this.isImageFile(name) && !CONFIG.hiddenAssetNames.includes(String(name || '').toLowerCase());
+            },
+
+            formatNumber(value, maximumFractionDigits = 0) {
+                const numeric = Number(value || 0);
+                const hasFraction = maximumFractionDigits > 0 && Math.abs(numeric % 1) > 0.001;
+                return new Intl.NumberFormat('en-GB', {
+                    minimumFractionDigits: hasFraction ? Math.min(1, maximumFractionDigits) : 0,
+                    maximumFractionDigits
+                }).format(numeric);
+            },
+
+            formatDuration(seconds) {
+                const safeSeconds = Math.max(0, Math.round(Number(seconds) || 0));
+
+                if (!safeSeconds) {
+                    return '0s';
+                }
+
+                if (safeSeconds < 60) {
+                    return `${safeSeconds}s`;
+                }
+
+                if (safeSeconds < 3600) {
+                    const minutes = Math.floor(safeSeconds / 60);
+                    const remainingSeconds = safeSeconds % 60;
+                    return remainingSeconds ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+                }
+
+                const hours = Math.floor(safeSeconds / 3600);
+                const remainingMinutes = Math.floor((safeSeconds % 3600) / 60);
+                return remainingMinutes ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+            },
+
+            formatTimestamp(value) {
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) {
+                    return '';
+                }
+                return date.toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            },
+
+            formatShortDate(value) {
+                const date = new Date(`${value}T00:00:00Z`);
+                if (Number.isNaN(date.getTime())) {
+                    return value;
+                }
+                return date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short'
+                });
+            },
+
+            formatTargetType(value) {
+                const labels = {
+                    internal: 'Internal',
+                    external: 'External',
+                    mailto: 'Email'
+                };
+                return labels[String(value || '').toLowerCase()] || String(value || '');
+            },
+
+            renderAnalyticsLoading() {
+                document.getElementById('analytics-summary').innerHTML = Array.from({ length: 6 }, () => `
+                    <article class="metric-card">
+                        <div class="metric-label">Loading</div>
+                        <div class="metric-value">...</div>
+                    </article>
+                `).join('');
+                document.getElementById('analytics-pages').innerHTML = '<div class="analytics-empty">Loading analytics...</div>';
+                document.getElementById('analytics-click-types').innerHTML = '';
+                document.getElementById('analytics-clicks').innerHTML = '<div class="analytics-empty">Loading analytics...</div>';
+                document.getElementById('analytics-daily').innerHTML = '<div class="analytics-empty">Loading analytics...</div>';
+                document.getElementById('analytics-pages-meta').textContent = '';
+                document.getElementById('analytics-clicks-meta').textContent = '';
+                document.getElementById('analytics-daily-meta').textContent = '';
+            },
+
+            updateAnalyticsRangeButtons() {
+                document.querySelectorAll('[data-analytics-range]').forEach(node => {
+                    node.classList.toggle('active', Number(node.dataset.analyticsRange) === this.analyticsRangeDays);
+                });
+            },
+
+            setAnalyticsRange(days) {
+                const safeDays = Number(days || 7);
+                if (this.analyticsRangeDays === safeDays) {
+                    return;
+                }
+
+                this.analyticsRangeDays = safeDays;
+                this.updateAnalyticsRangeButtons();
+                this.loadAnalytics(true);
+            },
+
+            async requestAnalyticsReport(days) {
+                const token = this.getGithubToken();
+
+                if (!token) {
+                    throw new Error('Login is required before analytics can be loaded.');
+                }
+
+                const response = await fetch(`${CONFIG.analyticsApiUrl}/api/reports/summary?days=${encodeURIComponent(days)}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-store',
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                let payload = null;
+
+                try {
+                    payload = await response.json();
+                } catch (error) {
+                    payload = null;
+                }
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        this.showAuthError();
+                    }
+                    throw new Error(payload && payload.error ? payload.error : 'Analytics could not be loaded.');
+                }
+
+                return payload;
+            },
+
+            renderAnalytics(report) {
+                const summary = report.summary || {};
+                const pages = Array.isArray(report.topPages) ? report.topPages : [];
+                const clicks = Array.isArray(report.topClicks) ? report.topClicks : [];
+                const clickTypes = Array.isArray(report.clickTypes) ? report.clickTypes : [];
+                const daily = Array.isArray(report.daily) ? report.daily : [];
+
+                document.getElementById('analytics-summary').innerHTML = [
+                    {
+                        label: 'Pageviews',
+                        value: this.formatNumber(summary.pageviews),
+                        meta: `${this.formatNumber(pages.length)} tracked pages`
+                    },
+                    {
+                        label: 'Engaged visits',
+                        value: this.formatNumber(summary.engagementVisits),
+                        meta: 'Visible-tab engagement only'
+                    },
+                    {
+                        label: 'Avg active time',
+                        value: this.formatDuration(summary.avgActiveSeconds),
+                        meta: 'Average per engaged visit'
+                    },
+                    {
+                        label: 'Avg scroll',
+                        value: `${this.formatNumber(summary.avgScrollPercent, 1)}%`,
+                        meta: 'Average per engaged visit'
+                    },
+                    {
+                        label: 'Exits',
+                        value: this.formatNumber(summary.exits),
+                        meta: 'Page exits captured on leave'
+                    },
+                    {
+                        label: 'Link clicks',
+                        value: this.formatNumber(summary.clicks),
+                        meta: `${this.formatNumber(clickTypes.length)} click categories`
+                    }
+                ].map(card => `
+                    <article class="metric-card">
+                        <div class="metric-label">${card.label}</div>
+                        <div class="metric-value">${card.value}</div>
+                        <div class="metric-meta">${card.meta}</div>
+                    </article>
+                `).join('');
+
+                document.getElementById('analytics-pages-meta').textContent = `Last ${report.days} days`;
+                document.getElementById('analytics-clicks-meta').textContent = `${this.formatNumber(summary.clicks)} clicks total`;
+                document.getElementById('analytics-daily-meta').textContent = `Since ${report.sinceDate}`;
+
+                document.getElementById('analytics-click-types').innerHTML = clickTypes.length
+                    ? clickTypes.map(item => `
+                        <article class="analytics-type-card">
+                            <div class="analytics-kicker">${this.formatTargetType(item.targetType)}</div>
+                            <div class="metric-value" style="font-size:1.2rem;">${this.formatNumber(item.clicks)}</div>
+                        </article>
+                    `).join('')
+                    : '';
+
+                document.getElementById('analytics-pages').innerHTML = pages.length
+                    ? `
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Page</th>
+                                    <th>Views</th>
+                                    <th>Engaged</th>
+                                    <th>Avg time</th>
+                                    <th>Avg scroll</th>
+                                    <th>Exits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${pages.map(row => `
+                                    <tr>
+                                        <td><code>${this.sanitizeAttribute(row.pagePath)}</code></td>
+                                        <td>${this.formatNumber(row.pageviews)}</td>
+                                        <td>${this.formatNumber(row.engagementVisits)}</td>
+                                        <td>${this.formatDuration(row.avgActiveSeconds)}</td>
+                                        <td>${this.formatNumber(row.avgScrollPercent, 1)}%</td>
+                                        <td>${this.formatNumber(row.exits)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `
+                    : '<div class="analytics-empty">No page data yet.</div>';
+
+                document.getElementById('analytics-clicks').innerHTML = clicks.length
+                    ? `
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Target</th>
+                                    <th>Clicks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${clicks.map(row => `
+                                    <tr>
+                                        <td><code>${this.sanitizeAttribute(row.sourcePath)}</code></td>
+                                        <td>
+                                            <div class="analytics-target">
+                                                <span class="analytics-kicker">${this.formatTargetType(row.targetType)}</span>
+                                                <code>${this.sanitizeAttribute(row.targetValue)}</code>
+                                            </div>
+                                        </td>
+                                        <td>${this.formatNumber(row.clicks)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `
+                    : '<div class="analytics-empty">No click data yet.</div>';
+
+                document.getElementById('analytics-daily').innerHTML = daily.length
+                    ? `
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Views</th>
+                                    <th>Engaged</th>
+                                    <th>Avg time</th>
+                                    <th>Avg scroll</th>
+                                    <th>Clicks</th>
+                                    <th>Exits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${daily.map(row => `
+                                    <tr>
+                                        <td>${this.formatShortDate(row.statDate)}</td>
+                                        <td>${this.formatNumber(row.pageviews)}</td>
+                                        <td>${this.formatNumber(row.engagementVisits)}</td>
+                                        <td>${this.formatDuration(row.avgActiveSeconds)}</td>
+                                        <td>${this.formatNumber(row.avgScrollPercent, 1)}%</td>
+                                        <td>${this.formatNumber(row.clicks)}</td>
+                                        <td>${this.formatNumber(row.exits)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `
+                    : '<div class="analytics-empty">No daily trend data yet.</div>';
+            },
+
+            async loadAnalytics(force = false) {
+                if (this.analyticsLoading && !force) {
+                    return;
+                }
+
+                this.analyticsLoading = true;
+                this.updateAnalyticsRangeButtons();
+                this.renderAnalyticsLoading();
+                this.setStatus('analytics-status', 'Loading analytics...', false);
+
+                try {
+                    const report = await this.requestAnalyticsReport(this.analyticsRangeDays);
+                    this.renderAnalytics(report);
+                    this.setStatus('analytics-status', `Updated ${this.formatTimestamp(report.generatedAt)}.`, false);
+                } catch (error) {
+                    this.setStatus('analytics-status', error.message, true);
+                    document.getElementById('analytics-pages').innerHTML = '<div class="analytics-empty">Analytics could not be loaded.</div>';
+                    document.getElementById('analytics-clicks').innerHTML = '<div class="analytics-empty">Analytics could not be loaded.</div>';
+                    document.getElementById('analytics-daily').innerHTML = '<div class="analytics-empty">Analytics could not be loaded.</div>';
+                } finally {
+                    this.analyticsLoading = false;
+                }
             },
 
             async loadPosts() {

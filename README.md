@@ -63,6 +63,10 @@ npx wrangler deploy --config workers/analytics.wrangler.toml
 
 7. Rebuild and publish the site as usual.
 
+### Admin view
+
+After the site is published, open `/admin` and switch to `Analytics` to see the same aggregate data in a simple dashboard.
+
 ### Example queries
 
 Top pages by views:
