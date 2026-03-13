@@ -1,2 +1,9 @@
 _site/
 .jekyll-cache/
+docs/
+workers/.wrangler/
+.env
+*.bak
+.sass-cache/
+.jekyll-metadata
+vendor/
