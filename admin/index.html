@@ -119,8 +119,13 @@
         .analytics-panel-body { padding: 0 1rem 1rem; }
         .analytics-table { width: 100%; border-collapse: collapse; }
         .analytics-table th,
-        .analytics-table td { padding: 0.8rem 0; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-        .analytics-table th { color: var(--muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .analytics-table td { padding: 0.8rem 0.7rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+        .analytics-table th { color: var(--muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+        .analytics-table th:first-child,
+        .analytics-table td:first-child { padding-left: 0; }
+        .analytics-table th:last-child,
+        .analytics-table td:last-child { padding-right: 0; }
+        .analytics-table .numeric { text-align: right; white-space: nowrap; }
         .analytics-table td { font-size: 0.9rem; }
         .analytics-table tbody tr:last-child td { border-bottom: 0; }
         .analytics-subtle { color: var(--muted); font-size: 0.82rem; }
@@ -210,7 +215,7 @@
                             <button class="btn btn-small" type="button" data-analytics-range="30" onclick="app.setAnalyticsRange(30)">30D</button>
                             <button class="btn btn-small" type="button" data-analytics-range="90" onclick="app.setAnalyticsRange(90)">90D</button>
                         </div>
-                        <button class="btn" type="button" onclick="app.loadAnalytics(true)">Yenile</button>
+                        <button class="btn" type="button" onclick="app.loadAnalytics(true)">Refresh</button>
                     </div>
                     <div class="callout">
                         <strong>Anonymous analytics</strong>
@@ -249,16 +254,16 @@
                 <div id="view-photos" class="view">
                     <div class="section-head">
                         <div>
-                            <h3 style="margin:0;">Profil foto</h3>
+                            <h3 style="margin:0;">Profile photo</h3>
                         </div>
                     </div>
                     <section class="profile-studio">
                         <div class="profile-studio-head">
                             <div class="profile-studio-actions">
                                 <input type="file" id="profile-source-input" class="hidden" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif">
-                                <button class="btn" id="profile-upload-btn" type="button" onclick="app.triggerProfileSourceUpload()">Foto sec</button>
-                                <button class="btn btn-danger" id="profile-source-delete-btn" type="button" onclick="app.deleteProfileSource()">Sil</button>
-                                <button class="btn btn-primary" id="profile-save-btn" type="button" onclick="app.commitProfilePreview()" data-profile-control disabled>Kaydet</button>
+                                <button class="btn" id="profile-upload-btn" type="button" onclick="app.triggerProfileSourceUpload()">Choose photo</button>
+                                <button class="btn btn-danger" id="profile-source-delete-btn" type="button" onclick="app.deleteProfileSource()">Delete</button>
+                                <button class="btn btn-primary" id="profile-save-btn" type="button" onclick="app.commitProfilePreview()" data-profile-control disabled>Save</button>
                             </div>
                         </div>
                         <div class="profile-studio-layout">
@@ -266,14 +271,14 @@
                                 <div class="studio-card profile-source-card">
                                     <img id="profile-source-thumb" class="profile-source-thumb" alt="Selected profile source">
                                     <div class="profile-source-copy">
-                                        <strong id="profile-source-title">Foto</strong>
+                                        <strong id="profile-source-title">Photo</strong>
                                         <div class="helper" id="profile-source-meta" style="margin:0;"></div>
                                     </div>
                                 </div>
                                 <div class="cropper-stage is-empty" id="profile-cropper-stage">
                                     <img id="profile-editor-image" class="hidden" alt="Profile photo cropper stage">
                                     <div class="cropper-empty" id="profile-editor-empty">
-                                        Foto sec
+                                        Choose a photo
                                     </div>
                                 </div>
                             </div>
@@ -289,8 +294,8 @@
                                         </div>
                                     </div>
                                     <div class="control-inline">
-                                        <button class="btn btn-small" id="profile-reset-btn" type="button" onclick="app.resetProfileEditor()" data-profile-control disabled>Sifirla</button>
-                                        <button class="btn btn-small" id="profile-download-btn" type="button" onclick="app.downloadProfilePreview()" data-profile-control disabled>Indir</button>
+                                        <button class="btn btn-small" id="profile-reset-btn" type="button" onclick="app.resetProfileEditor()" data-profile-control disabled>Reset</button>
+                                        <button class="btn btn-small" id="profile-download-btn" type="button" onclick="app.downloadProfilePreview()" data-profile-control disabled>Download</button>
                                     </div>
                                 </div>
                                 <div class="preview-stack">
@@ -342,17 +347,17 @@
                         <div class="studio-footer">
                             <div class="editor-note" id="profile-editor-note"></div>
                             <div class="studio-footer-actions">
-                                <button class="btn" type="button" onclick="app.loadPhotos()">Yenile</button>
+                                <button class="btn" type="button" onclick="app.loadPhotos()">Refresh</button>
                             </div>
                         </div>
                     </section>
                     <div id="photos-status" class="status"></div>
                     <details class="asset-library">
-                        <summary>Diger dosyalar</summary>
+                        <summary>Other files</summary>
                         <div class="asset-library-body">
                             <div class="toolbar" style="margin-bottom:1rem;">
                                 <input type="file" id="photo-upload-input" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif" style="max-width:320px; margin:0;">
-                                <button class="btn btn-primary" onclick="app.uploadPhoto()">Yukle</button>
+                                <button class="btn btn-primary" onclick="app.uploadPhoto()">Upload</button>
                             </div>
                             <div id="photos-grid" class="photo-grid"></div>
                         </div>
@@ -775,22 +780,22 @@
                             <thead>
                                 <tr>
                                     <th>Page</th>
-                                    <th>Views</th>
-                                    <th>Engaged</th>
-                                    <th>Avg time</th>
-                                    <th>Avg scroll</th>
-                                    <th>Exits</th>
+                                    <th class="numeric">Views</th>
+                                    <th class="numeric">Engaged</th>
+                                    <th class="numeric">Avg time</th>
+                                    <th class="numeric">Avg scroll</th>
+                                    <th class="numeric">Exits</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${pages.map(row => `
                                     <tr>
                                         <td><code>${this.sanitizeAttribute(row.pagePath)}</code></td>
-                                        <td>${this.formatNumber(row.pageviews)}</td>
-                                        <td>${this.formatNumber(row.engagementVisits)}</td>
-                                        <td>${this.formatDuration(row.avgActiveSeconds)}</td>
-                                        <td>${this.formatNumber(row.avgScrollPercent, 1)}%</td>
-                                        <td>${this.formatNumber(row.exits)}</td>
+                                        <td class="numeric">${this.formatNumber(row.pageviews)}</td>
+                                        <td class="numeric">${this.formatNumber(row.engagementVisits)}</td>
+                                        <td class="numeric">${this.formatDuration(row.avgActiveSeconds)}</td>
+                                        <td class="numeric">${this.formatNumber(row.avgScrollPercent, 1)}%</td>
+                                        <td class="numeric">${this.formatNumber(row.exits)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -805,7 +810,7 @@
                                 <tr>
                                     <th>Source</th>
                                     <th>Target</th>
-                                    <th>Clicks</th>
+                                    <th class="numeric">Clicks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -818,7 +823,7 @@
                                                 <code>${this.sanitizeAttribute(row.targetValue)}</code>
                                             </div>
                                         </td>
-                                        <td>${this.formatNumber(row.clicks)}</td>
+                                        <td class="numeric">${this.formatNumber(row.clicks)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -832,24 +837,24 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Views</th>
-                                    <th>Engaged</th>
-                                    <th>Avg time</th>
-                                    <th>Avg scroll</th>
-                                    <th>Clicks</th>
-                                    <th>Exits</th>
+                                    <th class="numeric">Views</th>
+                                    <th class="numeric">Engaged</th>
+                                    <th class="numeric">Avg time</th>
+                                    <th class="numeric">Avg scroll</th>
+                                    <th class="numeric">Clicks</th>
+                                    <th class="numeric">Exits</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${daily.map(row => `
                                     <tr>
                                         <td>${this.formatShortDate(row.statDate)}</td>
-                                        <td>${this.formatNumber(row.pageviews)}</td>
-                                        <td>${this.formatNumber(row.engagementVisits)}</td>
-                                        <td>${this.formatDuration(row.avgActiveSeconds)}</td>
-                                        <td>${this.formatNumber(row.avgScrollPercent, 1)}%</td>
-                                        <td>${this.formatNumber(row.clicks)}</td>
-                                        <td>${this.formatNumber(row.exits)}</td>
+                                        <td class="numeric">${this.formatNumber(row.pageviews)}</td>
+                                        <td class="numeric">${this.formatNumber(row.engagementVisits)}</td>
+                                        <td class="numeric">${this.formatDuration(row.avgActiveSeconds)}</td>
+                                        <td class="numeric">${this.formatNumber(row.avgScrollPercent, 1)}%</td>
+                                        <td class="numeric">${this.formatNumber(row.clicks)}</td>
+                                        <td class="numeric">${this.formatNumber(row.exits)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1046,9 +1051,9 @@
                                         <div class="helper" style="margin:0.35rem 0 0 0;">${this.sanitizeAttribute(file.path)}</div>
                                     </div>
                                     <div class="photo-actions">
-                                        <button class="btn btn-small" onclick="app.copyPhotoUrl('${this.sanitizeAttribute(imageUrl)}')">URL kopyala</button>
-                                        <button class="btn btn-small" onclick="app.prepareReplacePhoto('${this.sanitizeAttribute(file.path)}')">Degistir</button>
-                                        <button class="btn btn-small btn-danger" onclick="app.deletePhoto('${this.sanitizeAttribute(file.path)}', '${this.sanitizeAttribute(file.sha)}')">Sil</button>
+                                        <button class="btn btn-small" onclick="app.copyPhotoUrl('${this.sanitizeAttribute(imageUrl)}')">Copy URL</button>
+                                        <button class="btn btn-small" onclick="app.prepareReplacePhoto('${this.sanitizeAttribute(file.path)}')">Replace</button>
+                                        <button class="btn btn-small btn-danger" onclick="app.deletePhoto('${this.sanitizeAttribute(file.path)}', '${this.sanitizeAttribute(file.sha)}')">Delete</button>
                                     </div>
                                 </div>
                             </article>
@@ -1134,10 +1139,10 @@
                 if (thumb) thumb.src = thumbUrl || this.getProfilePlaceholderDataUrl();
 
                 if (editor.sourceDirty) {
-                    if (title) title.textContent = editor.sourceFileName || 'Yeni foto';
-                    if (meta) meta.textContent = 'Kaydedilmedi';
+                    if (title) title.textContent = editor.sourceFileName || 'New photo';
+                    if (meta) meta.textContent = 'Not saved yet';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Taslagi sil';
+                        deleteButton.textContent = 'Discard draft';
                         deleteButton.disabled = false;
                     }
                     return;
@@ -1145,9 +1150,9 @@
 
                 if (editor.sourceExists) {
                     if (title) title.textContent = 'profile.jpg';
-                    if (meta) meta.textContent = 'Kaynak dosya';
+                    if (meta) meta.textContent = 'Source file';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Sil';
+                        deleteButton.textContent = 'Delete';
                         deleteButton.disabled = false;
                     }
                     return;
@@ -1155,18 +1160,18 @@
 
                 if (editor.avatarExists) {
                     if (title) title.textContent = 'profile-avatar.png';
-                    if (meta) meta.textContent = 'Canli avatar';
+                    if (meta) meta.textContent = 'Live avatar';
                     if (deleteButton) {
-                        deleteButton.textContent = 'Sil';
+                        deleteButton.textContent = 'Delete';
                         deleteButton.disabled = true;
                     }
                     return;
                 }
 
-                if (title) title.textContent = 'Foto yok';
+                if (title) title.textContent = 'No photo';
                 if (meta) meta.textContent = '';
                 if (deleteButton) {
-                    deleteButton.textContent = 'Sil';
+                    deleteButton.textContent = 'Delete';
                     deleteButton.disabled = true;
                 }
             },
@@ -1222,7 +1227,7 @@
                     this.profileEditor.draftObjectUrl = URL.createObjectURL(file);
                     this.profileEditor.imageUrl = this.profileEditor.draftObjectUrl;
                     this.loadProfileSourceImage(this.profileEditor.draftObjectUrl);
-                    this.setStatus('photos-status', `${file.name} hazir.`, false);
+                    this.setStatus('photos-status', `${file.name} is ready.`, false);
                 } catch (error) {
                     this.setStatus('photos-status', error.message || 'Could not load the selected photo.', true);
                 } finally {
@@ -1267,7 +1272,7 @@
                     });
                     input.value = '';
                     this.currentAssetPath = null;
-                    this.setStatus('photos-status', existingSha ? 'Guncellendi.' : 'Yuklendi.', false);
+                    this.setStatus('photos-status', existingSha ? 'Updated.' : 'Uploaded.', false);
                     this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -1285,16 +1290,16 @@
                     } else {
                         this.renderEmptyProfileEditor();
                     }
-                    this.setStatus('photos-status', 'Taslak silindi.', false);
+                    this.setStatus('photos-status', 'Draft discarded.', false);
                     return;
                 }
 
                 if (!editor.sourceExists || !editor.sourceSha) {
-                    this.setStatus('photos-status', 'Silinecek foto yok.', true);
+                    this.setStatus('photos-status', 'No source photo to delete.', true);
                     return;
                 }
 
-                if (!confirm('assets/profile.jpg silinsin mi?')) {
+                if (!confirm('Delete assets/profile.jpg?')) {
                     return;
                 }
 
@@ -1305,7 +1310,7 @@
                         message: 'cms: delete profile source image',
                         sha: editor.sourceSha
                     });
-                    this.setStatus('photos-status', 'Silindi.', false);
+                    this.setStatus('photos-status', 'Deleted.', false);
                     await this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -1336,7 +1341,7 @@
                         input.value = '';
                         input.onchange = null;
                         this.currentAssetPath = null;
-                        this.setStatus('photos-status', 'Guncellendi.', false);
+                        this.setStatus('photos-status', 'Updated.', false);
                         this.loadPhotos();
                     } catch (error) {
                         this.setStatus('photos-status', error.message, true);
@@ -1353,7 +1358,7 @@
                         message: `cms: delete image ${path.split('/').pop()}`,
                         sha
                     });
-                    this.setStatus('photos-status', 'Silindi.', false);
+                    this.setStatus('photos-status', 'Deleted.', false);
                     this.loadPhotos();
                 } catch (error) {
                     this.setStatus('photos-status', error.message, true);
@@ -1596,7 +1601,7 @@
                 const uploadButton = document.getElementById('profile-upload-btn');
                 const deleteButton = document.getElementById('profile-source-delete-btn');
                 const note = document.getElementById('profile-editor-note');
-                const previousLabel = saveButton ? saveButton.textContent : 'Kaydet';
+                const previousLabel = saveButton ? saveButton.textContent : 'Save';
                 const dataUrl = this.getProfilePreviewDataUrl(PROFILE_AVATAR_RENDER_SIZE);
 
                 if (!dataUrl || !dataUrl.startsWith('data:image/png;base64,')) {
@@ -1607,12 +1612,12 @@
                 this.toggleProfileControls(false);
                 if (saveButton) {
                     saveButton.disabled = true;
-                    saveButton.textContent = 'Kaydediliyor...';
+                    saveButton.textContent = 'Saving...';
                 }
                 if (uploadButton) uploadButton.disabled = true;
                 if (deleteButton) deleteButton.disabled = true;
                 if (note) note.textContent = '';
-                this.setStatus('photos-status', 'Kaydediliyor...', false);
+                this.setStatus('photos-status', 'Saving...', false);
 
                 try {
                     await this.saveProfileSourceAsset();
@@ -1621,12 +1626,12 @@
                     this.clearProfileDraftState();
                     this.refreshProfilePreview(dataUrl);
                     if (note) {
-                        note.textContent = 'Kaydedildi';
+                        note.textContent = 'Saved';
                     }
-                    this.setStatus('photos-status', 'Kaydedildi.', false);
+                    this.setStatus('photos-status', 'Saved.', false);
                     await this.loadPhotos();
                 } catch (error) {
-                    if (note) note.textContent = 'Kaydetme hatasi';
+                    if (note) note.textContent = 'Save failed';
                     this.setStatus('photos-status', error.message || 'Profile photo save failed.', true);
                 } finally {
                     if (saveButton) {
