@@ -22,5 +22,3 @@ bundle exec jekyll build
 The site includes an optional anonymous analytics flow for aggregate site statistics only.
 
 It is designed without analytics cookies, persistent visitor IDs, or cross-site tracking. Visitor-facing privacy details live in `privacy.md`.
-
-For deployment, worker configuration, D1 setup, and operational notes, see `docs/DEPLOY_FLOW.md`.
