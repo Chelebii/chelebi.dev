@@ -1,0 +1,12 @@
+name = "chelebi-anonymous-analytics"
+main = "analytics.js"
+compatibility_date = "2026-03-12"
+
+[vars]
+ALLOWED_ORIGIN = "https://chelebi.dev"
+
+[[d1_databases]]
+binding = "ANALYTICS_DB"
+database_name = "chelebi-anonymous-analytics"
+database_id = "ba1c9022-c388-4185-9740-2a8f23bd4e29"
+migrations_dir = "analytics-migrations"

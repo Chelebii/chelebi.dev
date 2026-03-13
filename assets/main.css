@@ -271,6 +271,15 @@ select {
   padding-top: 14px;
 }
 
+.site-disclosure {
+  margin: 40px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--soft);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -507,5 +516,10 @@ select {
   .post-list tr {
     grid-template-columns: 78px 22px 1fr;
     gap: 8px;
+  }
+
+  .site-disclosure {
+    margin-top: 32px;
+    font-size: 0.78rem;
   }
 }
